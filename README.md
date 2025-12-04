@@ -56,6 +56,10 @@ To begin using Aura Wallet Core in your project, follow these steps:
 
 3. Run the `flutter pub get` command to install the library.
 
+## Dependency lockfile
+
+The repository tracks `pubspec.lock` for CI dependency verification. Regenerate it with `flutter pub get` after installing the Dart/Flutter SDK so it reflects the versions resolved in your environment.
+
 ## Basic Usage
 
 ### Creating a New Aura Wallet
