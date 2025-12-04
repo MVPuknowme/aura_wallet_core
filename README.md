@@ -39,14 +39,22 @@ Aura Wallet Core is a library designed to simplify the creation and management o
 
 To begin using Aura Wallet Core in your project, follow these steps:
 
-1. Add `aura_wallet_core` to your project's dependencies by adding the following line to your `pubspec.yaml` file:
+1. Install the Dart SDK if it is not already available on your machine. You can install it locally into this repository by running:
+
+   ```bash
+   ./scripts/install_dart.sh
+   export PATH="$(pwd)/.dart-sdk/bin:$PATH"
+   dart --version
+   ```
+
+2. Add `aura_wallet_core` to your project's dependencies by adding the following line to your `pubspec.yaml` file:
 
    ```yaml
    dependencies:
      aura_wallet_core: ^latest_version
    ```
 
-2. Run the `flutter pub get` command to install the library.
+3. Run the `flutter pub get` command to install the library.
 
 ## Basic Usage
 
