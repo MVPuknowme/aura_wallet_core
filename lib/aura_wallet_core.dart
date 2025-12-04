@@ -1,5 +1,7 @@
 import 'src/aura_internal_wallet_ipml.dart';
 import 'src/config_options/biometric_options.dart';
+import 'src/config_options/currency_conversion_config.dart';
+import 'src/config_options/payment_processing_rules.dart';
 import 'src/constants/aura_constants.dart';
 import 'src/entities/aura_wallet.dart';
 import 'src/env/env.dart';
@@ -10,18 +12,30 @@ abstract class AuraWalletCore {
   factory AuraWalletCore.create({
     required AuraWalletCoreEnvironment environment,
     BiometricOptions? biometricOptions,
+    PaymentProcessingRules paymentRules = const PaymentProcessingRules(),
+    CurrencyConversionConfig currencyConversionConfig =
+        const CurrencyConversionConfig(),
   }) {
-    return _instance(environment, biometricOptions);
+    return _instance(
+      environment,
+      biometricOptions,
+      paymentRules,
+      currencyConversionConfig,
+    );
   }
 
   /// Internal method to create an instance of [AuraWalletCore].
   static AuraWalletCore _instance(
     AuraWalletCoreEnvironment environment,
     BiometricOptions? biometricOptions,
+    PaymentProcessingRules paymentRules,
+    CurrencyConversionConfig currencyConversionConfig,
   ) =>
       AuraWalletCoreImpl(
         environment: environment,
         biometricOptions: biometricOptions,
+        paymentRules: paymentRules,
+        currencyConversionConfig: currencyConversionConfig,
       );
 
   /// Generates a random HD wallet.

@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:hex/hex.dart';
 import '../aura_wallet_core.dart';
 import 'config_options/biometric_options.dart';
+import 'config_options/currency_conversion_config.dart';
+import 'config_options/payment_processing_rules.dart';
 import 'constants/aura_constants.dart';
 import 'constants/error_constants.dart';
 import 'core/exceptions/aura_internal_exception.dart';
@@ -21,10 +23,15 @@ class AuraWalletCoreImpl implements AuraWalletCore {
   AuraWalletCoreImpl({
     required AuraWalletCoreEnvironment environment,
     required BiometricOptions? biometricOptions,
+    required PaymentProcessingRules paymentRules,
+    required CurrencyConversionConfig currencyConversionConfig,
   }) {
-    Storehouse.environment = environment;
-    Storehouse.networkInfo = AuraWalletUtil.getNetworkInfo(environment);
-    Storehouse.storage = AuraInternalStorage(biometricOptions);
+    Storehouse.makeDI(
+      environment,
+      biometricOptions,
+      paymentRules,
+      currencyConversionConfig,
+    );
   }
 
   @override
