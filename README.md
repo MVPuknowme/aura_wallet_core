@@ -25,6 +25,8 @@ Aura Wallet Core is a library designed to simplify the creation and management o
   - [Documentation](#documentation)
   - [Issues and Feedback](#issues-and-feedback)
   - [License](#license)
+  - [Dependency lockfile](#dependency-lockfile)
+  - [Scheduled weekly email workflow](#scheduled-weekly-email-workflow)
 
 ## Roadmap
 
@@ -59,6 +61,19 @@ To begin using Aura Wallet Core in your project, follow these steps:
 ## Dependency lockfile
 
 The repository tracks `pubspec.lock` for CI dependency verification. Regenerate it with `flutter pub get` after installing the Dart/Flutter SDK so it reflects the versions resolved in your environment.
+
+## Scheduled weekly email workflow
+
+A GitHub Actions workflow sends a weekly status email every Monday at 12:00 UTC (and can also be triggered manually). Configure the following repository secrets so the workflow can authenticate with your SMTP provider:
+
+- `EMAIL_SERVER_ADDRESS`: SMTP server hostname
+- `EMAIL_SERVER_PORT`: SMTP server port (for example, `465` or `587`)
+- `EMAIL_USERNAME`: SMTP username
+- `EMAIL_PASSWORD`: SMTP password or app password
+- `EMAIL_FROM_ADDRESS`: Email address to appear in the From header
+- `EMAIL_TO_RECIPIENTS`: Comma-separated list of recipient addresses
+
+You can customize the email subject, body, or schedule in `.github/workflows/weekly-email.yml`.
 
 ## Basic Usage
 
