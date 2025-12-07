@@ -73,7 +73,7 @@ A GitHub Actions workflow sends a weekly status email every Monday at 12:00 UTC 
 - `EMAIL_FROM_ADDRESS`: Email address to appear in the From header
 - `EMAIL_TO_RECIPIENTS`: Comma-separated list of recipient addresses
 
-You can customize the email subject, body, or schedule in `.github/workflows/weekly-email.yml`.
+You can customize the email subject, body, or schedule in `.github/workflows/weekly-email.yml`. Manual `workflow_dispatch` runs accept an optional `dry_run` input (`true`/`false`), which lets you preview the workflow logs without actually sending an email. The workflow uses a `concurrency` group to ensure only one weekly email run is active at a time.
 
 ## Basic Usage
 
