@@ -30,6 +30,18 @@ class AuraWalletImpl extends AuraWallet {
           environment: environment,
         );
 
+  void _ensurePaymentsAllowed(String context) {
+    final String? errorMessage =
+        Storehouse.paymentRules.validationErrorMessage(context: context);
+
+    if (errorMessage != null) {
+      throw AuraInternalError(
+        ErrorCode.PaymentProcessingNotAllowed,
+        errorMessage,
+      );
+    }
+  }
+
   /// Submits a signed transaction to the blockchain network.
   ///
   /// Returns `true` if the transaction is successfully broadcasted, otherwise `false`.
@@ -41,6 +53,8 @@ class AuraWalletImpl extends AuraWallet {
   @override
   Future<bool> submitTransaction({required Tx signedTransaction}) async {
     try {
+      _ensurePaymentsAllowed('Submit transaction');
+
       var networkInfo = Storehouse.networkInfo;
       final txSender = TxSender.fromNetworkInfo(networkInfo);
       final response = await txSender.broadcastTx(signedTransaction);
@@ -83,6 +97,28 @@ class AuraWalletImpl extends AuraWallet {
 
   Future<bool> checkMnemonic({required String mnemonic}) async {
     return Bip39.validateMnemonic(mnemonic.split(' '));
+  }
+
+  @override
+  Future<double> convertAmount({
+    required double amount,
+    required String targetCurrency,
+  }) async {
+    try {
+      return Storehouse.currencyConversionService.convert(
+        amount: amount,
+        targetCurrency: targetCurrency,
+      );
+    } catch (e) {
+      if (e is AuraInternalError) {
+        rethrow;
+      }
+
+      throw AuraInternalError(
+        ErrorCode.CurrencyConversionUnavailable,
+        'Failed to convert currency: $e',
+      );
+    }
   }
 
   /// Retrieves the transaction history of the wallet associated with the provided [walletName].
@@ -219,6 +255,8 @@ class AuraWalletImpl extends AuraWallet {
     List<int>? funds,
     int? fee,
   }) async {
+    _ensurePaymentsAllowed('Smart contract payment');
+
     // Validate the contract address.
     if (contractAddress.isEmpty) {
       throw AuraInternalError(
@@ -341,6 +379,8 @@ class AuraWalletImpl extends AuraWallet {
     required String fee,
     String? memo,
   }) async {
+    _ensurePaymentsAllowed('Payment transaction');
+
     String denom = AuraWalletUtil.getDenom(environment);
 
     // Step #1: Create a message for the transaction.

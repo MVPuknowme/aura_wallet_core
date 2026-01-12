@@ -67,6 +67,15 @@ abstract class AuraWallet {
   /// Return mnemonic of user
   ///
   Future<String?> getWalletPassPhrase();
+
+  ///
+  /// Convert an [amount] from the configured base currency to [targetCurrency]
+  /// using the Phoenix Sun Pay conversion configuration.
+  ///
+  Future<double> convertAmount({
+    required double amount,
+    required String targetCurrency,
+  });
 }
 
 abstract class ComprehensiveWallet {

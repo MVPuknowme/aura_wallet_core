@@ -48,4 +48,10 @@ class ErrorCode {
 
   // Error code for cases where there is an error with wallet loading.
   static int WalletLoadingError = 1016;
+
+  // Error code for cases where payment processing is blocked by integration rules.
+  static int PaymentProcessingNotAllowed = 1017;
+
+  // Error code for cases where currency conversion is unavailable or disabled.
+  static int CurrencyConversionUnavailable = 1018;
 }
