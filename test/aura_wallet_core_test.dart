@@ -35,7 +35,7 @@ void main() {
   });
 }
 
-class MockNetworkInfo extends Mock implements NetworkInfo {}
+class Network extends implements NetworkInfo {}
 
 class MockTxSender extends Mock implements TxSender {}
 
