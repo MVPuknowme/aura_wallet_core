@@ -41,4 +41,4 @@ class MockTxSender extends Mock implements TxSender {}
 
 class MockServiceClient extends Mock implements ServiceClient {}
 
-class MockGetTxsEventResponse implements GetTxsEventResponse {}
+class MockGetTxsEventResponse implements GetTxsEventResponse {true}
