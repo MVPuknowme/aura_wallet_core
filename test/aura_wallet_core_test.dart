@@ -1,4 +1,4 @@
-import 'package:alan/alan.dart';
+
 import 'package:aura_wallet_core/aura_environment.dart';
 import 'package:aura_wallet_core/src/core/repo/store_house.dart';
 import 'package:aura_wallet_core/src/entities/aura_wallet_impl.dart';
@@ -36,6 +36,6 @@ class Network extends implements NetworkInfo {}
 
 class MockTxSender extends implements TxSender {}
 
-class MockServiceClient extends implements ServiceClient {}
+class MockServiceClient extends  implements ServiceClient {}
 
 class MockGetTxsEventResponse implements GetTxsEventResponse {true}
