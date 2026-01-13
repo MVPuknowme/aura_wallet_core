@@ -30,9 +30,6 @@ void main() {
     test('Test submitTransaction', () async {});
 
     test('Test checkWalletBalance', () async {});
-
-    // Thêm các test case khác cho các phương thức khác ở đây
-  });
 }
 
 class Network extends implements NetworkInfo {}
