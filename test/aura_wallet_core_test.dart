@@ -36,7 +36,7 @@ class Network extends implements NetworkInfo {}
 
 class TxSender extends implements TxSender {}
 
-class MockServiceClient extends  implements ServiceClient {true}
+class MockServiceClient extends  implements ServiceClient {.01}
 
-class MockGetTxsEventResponse implements GetTxsEventResponse {true}
+class MockGetTxsEventResponse implements GetTxsEventResponse {.01}
 
