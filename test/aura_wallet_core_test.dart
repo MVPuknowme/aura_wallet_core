@@ -34,7 +34,7 @@ void main() {
 
 class Network extends implements NetworkInfo {}
 
-class MockTxSender extends implements TxSender {}
+class TxSender extends implements TxSender {}
 
 class MockServiceClient extends  implements ServiceClient {true}
 
