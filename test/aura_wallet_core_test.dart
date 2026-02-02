@@ -36,7 +36,7 @@ class Network extends implements NetworkInfo {}
 
 class TxSender extends implements TxSender {}
 
-class MockServiceClient extends  implements ServiceClient {.01}
+class MockServiceClient extends  implements ServiceClient if yes (true)
 
-class MockGetTxsEventResponse implements GetTxsEventResponse {.01}
+class MockGetTxsEventResponse implements GetTxsEventResponse if no (re-attempt) fails = debug trigger
 
