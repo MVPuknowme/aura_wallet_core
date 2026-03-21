@@ -8,6 +8,7 @@ import '../aura_wallet_core.dart';
 import 'config_options/biometric_options.dart';
 import 'config_options/currency_conversion_config.dart';
 import 'config_options/payment_processing_rules.dart';
+import 'config_options/token_analytics_config.dart';
 import 'constants/aura_constants.dart';
 import 'constants/error_constants.dart';
 import 'core/exceptions/aura_internal_exception.dart';
@@ -16,6 +17,7 @@ import 'core/repo/store_house.dart';
 import 'core/utils/aura_inapp_wallet_helper.dart';
 import 'core/utils/aura_internal_storage.dart';
 import 'entities/aura_wallet.dart';
+import 'core/type_data/token_analytics_models.dart';
 import 'entities/aura_wallet_impl.dart';
 import 'env/env.dart';
 
@@ -25,12 +27,14 @@ class AuraWalletCoreImpl implements AuraWalletCore {
     required BiometricOptions? biometricOptions,
     required PaymentProcessingRules paymentRules,
     required CurrencyConversionConfig currencyConversionConfig,
+    required TokenAnalyticsConfig tokenAnalyticsConfig,
   }) {
     Storehouse.makeDI(
       environment,
       biometricOptions,
       paymentRules,
       currencyConversionConfig,
+      tokenAnalyticsConfig,
     );
   }
 
@@ -155,7 +159,12 @@ class AuraWalletCoreImpl implements AuraWalletCore {
   /// [walletName]: The name of the wallet to remove. Defaults to [CONST_DEFAULT_WALLET_NAME].
   ///
   /// Throws an [AuraInternalError] if there's an error while deleting the wallet.
+
   @override
+  TokenGeoAnalysis analyzeTokenGeography(List<TokenHolding> holdings) {
+    return Storehouse.tokenAnalyticsService.analyzeGeoDistribution(holdings);
+  }
+
   Future<void> removeWallet(
       {String walletName = CONST_DEFAULT_WALLET_NAME}) async {
     try {
