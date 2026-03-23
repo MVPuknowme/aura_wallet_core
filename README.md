@@ -75,6 +75,10 @@ A GitHub Actions workflow sends a weekly status email every Monday at 12:00 UTC 
 
 You can customize the email subject, body, or schedule in `.github/workflows/weekly-email.yml`. Manual `workflow_dispatch` runs accept an optional `dry_run` input (`true`/`false`), which lets you preview the workflow logs without actually sending an email. The workflow uses a `concurrency` group to ensure only one weekly email run is active at a time.
 
+## Build workflow
+
+The repository build workflow is defined in `.github/workflows/dart.yml`. It runs on pushes and pull requests targeting `dev`, and now uses a `concurrency` group so only the latest build for the same ref stays active. Older in-progress runs for that ref are cancelled automatically to avoid duplicate GitHub Actions builds blocking each other.
+
 ## Basic Usage
 
 ### Creating a New Aura Wallet
