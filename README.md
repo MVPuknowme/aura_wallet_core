@@ -27,6 +27,7 @@ Aura Wallet Core is a library designed to simplify the creation and management o
   - [License](#license)
   - [Dependency lockfile](#dependency-lockfile)
   - [Scheduled weekly email workflow](#scheduled-weekly-email-workflow)
+  - [Built-in token geo analytics](#built-in-token-geo-analytics)
 
 ## Roadmap
 
@@ -61,6 +62,29 @@ To begin using Aura Wallet Core in your project, follow these steps:
 ## Dependency lockfile
 
 The repository tracks `pubspec.lock` for CI dependency verification. Regenerate it with `flutter pub get` after installing the Dart/Flutter SDK so it reflects the versions resolved in your environment.
+
+
+## Built-in token geo analytics
+
+Aura Wallet Core now includes built-in token geo analytics so integrators can summarize token exposure by geography without adding a separate analytics package. Configure the analytics engine when creating `AuraWalletCore`, then pass your holdings into `analyzeTokenGeography`.
+
+```dart
+final core = AuraWalletCore.create(
+  environment: AuraWalletCoreEnvironment.production,
+  tokenAnalyticsConfig: const TokenAnalyticsConfig(
+    providerName: 'BuiltInGeoAnalytics',
+    topRegionsLimit: 3,
+  ),
+);
+
+final analysis = core.analyzeTokenGeography(const <TokenHolding>[
+  TokenHolding(symbol: 'AURA', amount: 120, unitPrice: 0.45, geography: 'APAC'),
+  TokenHolding(symbol: 'ATOM', amount: 8, unitPrice: 9.8, geography: 'NA'),
+  TokenHolding(symbol: 'USDC', amount: 50, unitPrice: 1, geography: 'EU'),
+]);
+```
+
+The returned `TokenGeoAnalysis` includes total market value, the dominant region, a capped list of the highest-value regional breakdowns, a diversification score, and a human-readable insight string that can be used in dashboards or reports.
 
 ## Scheduled weekly email workflow
 

@@ -1,41 +1,63 @@
-
-import 'package:aura_wallet_core/aura_environment.dart';
-import 'package:aura_wallet_core/src/core/repo/store_house.dart';
-import 'package:aura_wallet_core/src/entities/aura_wallet_impl.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:aura_wallet_core/aura_wallet_core.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-
-class MockStorehouse extends Mock implements Storehouse {}
 
 void main() {
-  group('AuraWalletImpl Tests', () {
-    late AuraWalletImpl wallet;
-    late MockStorehouse mockStorehouse;
-    late MockNetworkInfo mockNetworkInfo;
-    late MockTxSender mockTxSender;
-    late MockServiceClient mockServiceClient;
-    late MockGetTxsEventResponse mockGetTxsEventResponse;
+  group('Token analytics', () {
+    test('builds a geo distribution summary for token holdings', () {
+      final AuraWalletCore core = AuraWalletCore.create(
+        environment: AuraWalletCoreEnvironment.testnet,
+        tokenAnalyticsConfig: const TokenAnalyticsConfig(topRegionsLimit: 2),
+      );
 
-    setUp(() {
-      mockStorehouse = MockStorehouse();
-      mockNetworkInfo = MockNetworkInfo();
-      mockTxSender = MockTxSender();
-      mockServiceClient = MockServiceClient();
-      mockGetTxsEventResponse = MockGetTxsEventResponse();
+      final TokenGeoAnalysis analysis = core.analyzeTokenGeography(
+        const <TokenHolding>[
+          TokenHolding(
+            symbol: 'AURA',
+            amount: 100,
+            unitPrice: 0.5,
+            geography: 'APAC',
+          ),
+          TokenHolding(
+            symbol: 'ATOM',
+            amount: 10,
+            unitPrice: 8,
+            geography: 'NA',
+          ),
+          TokenHolding(
+            symbol: 'USDC',
+            amount: 20,
+            unitPrice: 1,
+            geography: 'NA',
+          ),
+        ],
+      );
+
+      expect(analysis.totalMarketValue, closeTo(150, 0.0001));
+      expect(analysis.dominantRegion, 'NA');
+      expect(analysis.regions, hasLength(2));
+      expect(analysis.regions.first.allocation, closeTo(2 / 3, 0.0001));
+      expect(analysis.insight, contains('NA'));
     });
 
-    test('Test submitTransaction', () async {});
+    test('throws when analytics are disabled', () {
+      final AuraWalletCore core = AuraWalletCore.create(
+        environment: AuraWalletCoreEnvironment.testnet,
+        tokenAnalyticsConfig: const TokenAnalyticsConfig(enabled: false),
+      );
 
-    test('Test checkWalletBalance', () async {});
+      expect(
+        () => core.analyzeTokenGeography(
+          const <TokenHolding>[
+            TokenHolding(
+              symbol: 'AURA',
+              amount: 1,
+              unitPrice: 1,
+              geography: 'GLOBAL',
+            ),
+          ],
+        ),
+        throwsA(isA<Exception>()),
+      );
+    });
+  });
 }
-
-class Network extends implements NetworkInfo {}
-
-class MockTxSender extends implements TxSender {}
-
-class MockServiceClient extends  implements ServiceClient {}
-
-class MockGetTxsEventResponse implements GetTxsEventResponse {true}

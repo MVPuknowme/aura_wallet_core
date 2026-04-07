@@ -54,4 +54,7 @@ class ErrorCode {
 
   // Error code for cases where currency conversion is unavailable or disabled.
   static int CurrencyConversionUnavailable = 1018;
+
+  // Error code for cases where built-in token analytics is unavailable.
+  static int TokenAnalyticsUnavailable = 1019;
 }

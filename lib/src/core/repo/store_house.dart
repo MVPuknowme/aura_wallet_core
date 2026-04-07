@@ -5,8 +5,10 @@ import 'package:aura_wallet_core/src/env/env.dart';
 import 'package:aura_wallet_core/src/utils/aura_wallet_utils.dart';
 import 'package:aura_wallet_core/storage_util.dart';
 import 'package:aura_wallet_core/src/config_options/currency_conversion_config.dart';
+import 'package:aura_wallet_core/src/config_options/token_analytics_config.dart';
 
 import '../services/currency_conversion_service.dart';
+import '../services/token_analytics_service.dart';
 
 class Storehouse {
   Storehouse._();
@@ -16,12 +18,14 @@ class Storehouse {
   static late AuraInternalStorage storage;
   static late PaymentProcessingRules paymentRules;
   static late CurrencyConversionService currencyConversionService;
+  static late TokenAnalyticsService tokenAnalyticsService;
 
   static void makeDI(
     AuraWalletCoreEnvironment environment,
     BiometricOptions? biometricOptions,
     PaymentProcessingRules paymentRules,
     CurrencyConversionConfig currencyConversionConfig,
+    TokenAnalyticsConfig tokenAnalyticsConfig,
   ) {
     Storehouse.environment = environment;
     Storehouse.networkInfo = AuraWalletUtil.getNetworkInfo(environment);
@@ -29,6 +33,9 @@ class Storehouse {
     Storehouse.paymentRules = paymentRules;
     Storehouse.currencyConversionService = CurrencyConversionService(
       config: currencyConversionConfig,
+    );
+    Storehouse.tokenAnalyticsService = TokenAnalyticsService(
+      config: tokenAnalyticsConfig,
     );
   }
 }
