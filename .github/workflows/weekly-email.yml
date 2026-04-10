@@ -2,14 +2,8 @@ name: Weekly status email
 
 on:
   schedule:
-    # Runs at 12:00 UTC every Monday
+    # Runs once weekly at 12:00 UTC every Monday
     - cron: "0 12 * * 1"
-  workflow_dispatch:
-    inputs:
-      dry_run:
-        description: "Preview the email content without sending"
-        required: false
-        default: "false"
 
 jobs:
   send-weekly-email:
@@ -21,13 +15,11 @@ jobs:
       - name: Log workflow context
         run: |
           echo "Event name: ${{ github.event_name }}"
-          echo "Dry run input: ${{ github.event.inputs.dry_run }}"
           echo "Schedule expression: 0 12 * * 1"
           echo "Repository: ${{ github.repository }}"
           echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
       - name: Send weekly status email
-        if: ${{ github.event.inputs.dry_run != 'true' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.EMAIL_SERVER_ADDRESS }}
