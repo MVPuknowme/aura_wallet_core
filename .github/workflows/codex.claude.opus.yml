@@ -1,0 +1,90 @@
+name: Codex Claude Opus workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      user_input_flag:
+        description: "Set to true to satisfy Aura Core gating before execution"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      target_command:
+        description: "Primary command to run (reference-safe command recommended)"
+        required: false
+        default: "echo 'primary command placeholder'"
+        type: string
+      repair_command:
+        description: "Repair command to run between attempts"
+        required: false
+        default: "echo 'repair command placeholder'"
+        type: string
+
+concurrency:
+  group: codex-claude-opus-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  codex-claude-opus:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      USER_INPUT_FLAG: ${{ github.event.inputs.user_input_flag }}
+      TARGET_COMMAND: ${{ github.event.inputs.target_command }}
+      REPAIR_COMMAND: ${{ github.event.inputs.repair_command }}
+    steps:
+      - name: Enforce Aura Core input gate
+        run: |
+          if [[ "${USER_INPUT_FLAG}" != "true" ]]; then
+            echo "Aura Core gate blocked execution: set user_input.flag to true before proceeding."
+            exit 1
+          fi
+
+      - name: Execute with Aura Core 3-attempt repair loop
+        id: attempt_loop
+        shell: bash
+        run: |
+          set +e
+          success=false
+
+          for attempt in 1 2 3; do
+            echo "Running target command (attempt ${attempt}/3)"
+            bash -lc "${TARGET_COMMAND}"
+            status=$?
+
+            if [[ ${status} -eq 0 ]]; then
+              success=true
+              break
+            fi
+
+            echo "Attempt ${attempt} failed with status ${status}."
+            if [[ ${attempt} -lt 3 ]]; then
+              echo "Running repair command before retry ${attempt} -> $((attempt + 1))"
+              bash -lc "${REPAIR_COMMAND}"
+            fi
+          done
+
+          if [[ "${success}" == "true" ]]; then
+            echo "mode=normal" >> "${GITHUB_OUTPUT}"
+            echo "attempt_result=success" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          echo "max attempts reached; enforcing Aura Core reference-only mode."
+          echo "mode=reference-only" >> "${GITHUB_OUTPUT}"
+          echo "attempt_result=failed_after_retries" >> "${GITHUB_OUTPUT}"
+          exit 0
+
+      - name: Report execution mode
+        run: |
+          echo "attempt_result=${{ steps.attempt_loop.outputs.attempt_result }}"
+          echo "mode=${{ steps.attempt_loop.outputs.mode }}"
+
+      - name: Reference-only follow-up
+        if: steps.attempt_loop.outputs.mode == 'reference-only'
+        run: |
+          echo "Reference-only mode is active."
+          echo "State-changing operations are intentionally blocked after failed repair attempts."
