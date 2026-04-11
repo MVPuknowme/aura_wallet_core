@@ -64,7 +64,7 @@ The repository tracks `pubspec.lock` for CI dependency verification. Regenerate 
 
 ## Scheduled weekly email workflow
 
-A GitHub Actions workflow sends a weekly status email every Monday at 12:00 UTC (and can also be triggered manually). Configure the following repository secrets so the workflow can authenticate with your SMTP provider:
+A GitHub Actions workflow sends a weekly status email every Monday at 12:00 UTC. Configure the following repository secrets so the workflow can authenticate with your SMTP provider:
 
 - `EMAIL_SERVER_ADDRESS`: SMTP server hostname
 - `EMAIL_SERVER_PORT`: SMTP server port (for example, `465` or `587`)
@@ -73,7 +73,7 @@ A GitHub Actions workflow sends a weekly status email every Monday at 12:00 UTC 
 - `EMAIL_FROM_ADDRESS`: Email address to appear in the From header
 - `EMAIL_TO_RECIPIENTS`: Comma-separated list of recipient addresses
 
-You can customize the email subject, body, or schedule in `.github/workflows/weekly-email.yml`. Manual `workflow_dispatch` runs accept an optional `dry_run` input (`true`/`false`), which lets you preview the workflow logs without actually sending an email. The workflow uses a `concurrency` group to ensure only one weekly email run is active at a time.
+You can customize the email subject, body, or schedule in `.github/workflows/weekly-email.yml`. The workflow uses a `concurrency` group to ensure only one weekly email run is active at a time.
 
 ## Basic Usage
 
