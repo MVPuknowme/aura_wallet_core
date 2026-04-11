@@ -1,0 +1,62 @@
+name: Codex Claude Opus workflow (patched)
+
+on:
+  workflow_dispatch:
+    inputs:
+      user_input_flag:
+        description: "Set to true to satisfy Aura Core gating before execution"
+        required: true
+        default: "false"
+      target_command:
+        description: "Primary command to run"
+        required: true
+        default: "echo 'no target command provided' && exit 1"
+      repair_command:
+        description: "Repair command"
+        required: false
+        default: "echo 'repair placeholder'"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate gate
+        run: |
+          if [ "${{ github.event.inputs.user_input_flag }}" != "true" ]; then
+            echo "Execution blocked: user_input_flag must be true"
+            exit 1
+          fi
+
+      - name: Execute with retries
+        id: exec
+        run: |
+          set +e
+          result="failed"
+          for attempt in 1 2 3; do
+            echo "Attempt $attempt"
+            bash -lc "${{ github.event.inputs.target_command }}"
+            code=$?
+            if [ $code -eq 0 ]; then
+              result="success"
+              break
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              bash -lc "${{ github.event.inputs.repair_command }}"
+            fi
+          done
+
+          if [ "$result" = "success" ]; then
+            echo "mode=execute" >> "$GITHUB_OUTPUT"
+            echo "attempt_result=success" >> "$GITHUB_OUTPUT"
+            exit 0
+          else
+            echo "mode=reference-only" >> "$GITHUB_OUTPUT"
+            echo "attempt_result=failed" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      - name: Reference-only fallback
+        if: failure()
+        run: echo "Reference-only mode engaged"
