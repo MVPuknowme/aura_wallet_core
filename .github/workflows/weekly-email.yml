@@ -1,8 +1,8 @@
-name: Weekly status email
+name: Send email once weekly
 
 on:
   schedule:
-    # Runs at 12:00 UTC every Monday
+    # Runs once weekly at 12:00 UTC every Monday
     - cron: "0 12 * * 1"
   workflow_dispatch:
     inputs:

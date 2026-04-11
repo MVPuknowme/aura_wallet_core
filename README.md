@@ -86,6 +86,7 @@ final analysis = core.analyzeTokenGeography(const <TokenHolding>[
 
 The returned `TokenGeoAnalysis` includes total market value, the dominant region, a capped list of the highest-value regional breakdowns, a diversification score, and a human-readable insight string that can be used in dashboards or reports.
 
+
 ## Scheduled weekly email workflow
 
 A GitHub Actions workflow sends a weekly status email every Monday at 12:00 UTC (and can also be triggered manually). Configure the following repository secrets so the workflow can authenticate with your SMTP provider:
