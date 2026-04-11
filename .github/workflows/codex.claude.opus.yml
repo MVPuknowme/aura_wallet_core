@@ -1,4 +1,4 @@
-name: Codex Claude Opus workflow
+name: Codex Claude Opus workflow (patched)
 
 on:
   workflow_dispatch:
@@ -7,84 +7,56 @@ on:
         description: "Set to true to satisfy Aura Core gating before execution"
         required: true
         default: "false"
-        type: choice
-        options:
-          - "false"
-          - "true"
       target_command:
-        description: "Primary command to run (reference-safe command recommended)"
-        required: false
-        default: "echo 'primary command placeholder'"
-        type: string
+        description: "Primary command to run"
+        required: true
+        default: "echo 'no target command provided' && exit 1"
       repair_command:
-        description: "Repair command to run between attempts"
+        description: "Repair command"
         required: false
-        default: "echo 'repair command placeholder'"
-        type: string
-
-concurrency:
-  group: codex-claude-opus-${{ github.ref }}
-  cancel-in-progress: false
+        default: "echo 'repair placeholder'"
 
 jobs:
-  codex-claude-opus:
+  run:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    env:
-      USER_INPUT_FLAG: ${{ github.event.inputs.user_input_flag }}
-      TARGET_COMMAND: ${{ github.event.inputs.target_command }}
-      REPAIR_COMMAND: ${{ github.event.inputs.repair_command }}
     steps:
-      - name: Enforce Aura Core input gate
+      - uses: actions/checkout@v4
+
+      - name: Validate gate
         run: |
-          if [[ "${USER_INPUT_FLAG}" != "true" ]]; then
-            echo "Aura Core gate blocked execution: set user_input.flag to true before proceeding."
+          if [ "${{ github.event.inputs.user_input_flag }}" != "true" ]; then
+            echo "Execution blocked: user_input_flag must be true"
             exit 1
           fi
 
-      - name: Execute with Aura Core 3-attempt repair loop
-        id: attempt_loop
-        shell: bash
+      - name: Execute with retries
+        id: exec
         run: |
           set +e
-          success=false
-
+          result="failed"
           for attempt in 1 2 3; do
-            echo "Running target command (attempt ${attempt}/3)"
-            bash -lc "${TARGET_COMMAND}"
-            status=$?
-
-            if [[ ${status} -eq 0 ]]; then
-              success=true
+            echo "Attempt $attempt"
+            bash -lc "${{ github.event.inputs.target_command }}"
+            code=$?
+            if [ $code -eq 0 ]; then
+              result="success"
               break
             fi
-
-            echo "Attempt ${attempt} failed with status ${status}."
-            if [[ ${attempt} -lt 3 ]]; then
-              echo "Running repair command before retry ${attempt} -> $((attempt + 1))"
-              bash -lc "${REPAIR_COMMAND}"
+            if [ "$attempt" -lt 3 ]; then
+              bash -lc "${{ github.event.inputs.repair_command }}"
             fi
           done
 
-          if [[ "${success}" == "true" ]]; then
-            echo "mode=normal" >> "${GITHUB_OUTPUT}"
-            echo "attempt_result=success" >> "${GITHUB_OUTPUT}"
+          if [ "$result" = "success" ]; then
+            echo "mode=execute" >> "$GITHUB_OUTPUT"
+            echo "attempt_result=success" >> "$GITHUB_OUTPUT"
             exit 0
+          else
+            echo "mode=reference-only" >> "$GITHUB_OUTPUT"
+            echo "attempt_result=failed" >> "$GITHUB_OUTPUT"
+            exit 1
           fi
 
-          echo "max attempts reached; enforcing Aura Core reference-only mode."
-          echo "mode=reference-only" >> "${GITHUB_OUTPUT}"
-          echo "attempt_result=failed_after_retries" >> "${GITHUB_OUTPUT}"
-          exit 0
-
-      - name: Report execution mode
-        run: |
-          echo "attempt_result=${{ steps.attempt_loop.outputs.attempt_result }}"
-          echo "mode=${{ steps.attempt_loop.outputs.mode }}"
-
-      - name: Reference-only follow-up
-        if: steps.attempt_loop.outputs.mode == 'reference-only'
-        run: |
-          echo "Reference-only mode is active."
-          echo "State-changing operations are intentionally blocked after failed repair attempts."
+      - name: Reference-only fallback
+        if: failure()
+        run: echo "Reference-only mode engaged"
