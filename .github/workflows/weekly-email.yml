@@ -2,7 +2,7 @@ name: Weekly status email
 
 on:
   schedule:
-    # Runs once weekly at 12:00 UTC every Monday
+    # Runs once weekly at 12:00 UTC every Monday.
     - cron: "0 12 * * 1"
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
       - name: Log workflow context
         run: |
           echo "Event name: ${{ github.event_name }}"
-          echo "Schedule expression: 0 12 * * 1"
+          echo "Schedule expression: ${{ github.event.schedule }}"
           echo "Repository: ${{ github.repository }}"
           echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
