@@ -4,6 +4,16 @@ on:
   schedule:
     # Runs once weekly at 12:00 UTC every Monday
     - cron: "0 12 * * 1"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Skip sending the email and only log the composed message"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
 
 concurrency:
   group: weekly-email
@@ -12,15 +22,37 @@ concurrency:
 jobs:
   send-weekly-email:
     runs-on: ubuntu-latest
+    env:
+      IS_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
     steps:
       - name: Log workflow context
         run: |
           echo "Event name: ${{ github.event_name }}"
           echo "Schedule expression: 0 12 * * 1"
+          echo "Dry run: ${IS_DRY_RUN}"
           echo "Repository: ${{ github.repository }}"
           echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
+      - name: Preview weekly status email
+        if: env.IS_DRY_RUN == 'true'
+        run: |
+          cat <<'EOF'
+          Subject: Aura Wallet Core weekly status
+          To: ${{ secrets.EMAIL_TO_RECIPIENTS }}
+          From: ${{ secrets.EMAIL_FROM_ADDRESS }}
+
+          This is an automated weekly email from the Aura Wallet Core repository.
+
+          Repository: ${{ github.repository }}
+          Workflow: ${{ github.workflow }}
+          Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          Commit: ${{ github.sha }}
+
+          Update the body and recipients in .github/workflows/weekly-email.yml if you need a different message.
+          EOF
+
       - name: Send weekly status email
+        if: env.IS_DRY_RUN != 'true'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.EMAIL_SERVER_ADDRESS }}
