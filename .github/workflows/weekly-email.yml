@@ -2,18 +2,18 @@ name: Weekly status email
 
 on:
   schedule:
-    # Runs at 12:00 UTC every Monday
+    # Runs once weekly at 12:00 UTC every Monday
     - cron: "0 12 * * 1"
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Skip sending the email and only log the composed message"
+        description: "Skip sending and only preview the composed weekly email"
         required: false
-        default: "false"
+        default: "true"
         type: choice
         options:
-          - "false"
           - "true"
+          - "false"
 
 concurrency:
   group: weekly-email
@@ -23,7 +23,7 @@ jobs:
   send-weekly-email:
     runs-on: ubuntu-latest
     env:
-      IS_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+      IS_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'false' }}
     steps:
       - name: Log workflow context
         run: |
