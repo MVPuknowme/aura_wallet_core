@@ -1,2 +1,52 @@
+import Foundation
+import SafariServices
+import UIKit
 
+final class URLSanitizer {
+    static let blockedParams: Set<String> = [
+        "gclid",
+        "fbclid",
+        "gad_source",
+        "gad_campaignid",
+        "mc_cid",
+        "mc_eid",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "utm_term",
+        "utm_content"
+    ]
+
+    static func clean(_ url: URL) -> URL {
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let queryItems = components.queryItems,
+              !queryItems.isEmpty else {
+            return url
+        }
+
+        components.queryItems = queryItems.filter {
+            !blockedParams.contains($0.name.lowercased())
+        }
+
+        if components.queryItems?.isEmpty == true {
+            components.queryItems = nil
+        }
+
+        return components.url ?? url
+    }
+}
+
+final class NavigationAid {
+    weak var presenter: UIViewController?
+
+    init(presenter: UIViewController) {
+        self.presenter = presenter
+    }
+
+    func open(_ rawURL: URL) {
+        let cleanedURL = URLSanitizer.clean(rawURL)
+        let safariVC = SFSafariViewController(url: cleanedURL)
+        presenter?.present(safariVC, animated: true)
+    }
+}
 0xbAA5A03bC268546194550a427d3F1d5787c15403
