@@ -113,14 +113,16 @@ import 'package:aura_wallet_core/aura_wallet_core.dart';
 final AuraWalletCore auraWalletCore = AuraWalletCore.create(
   environment: AuraWalletCoreEnvironment.production,
   biometricOptions: BiometricOptions(
-    requestTitle: 'Authenticate',
-    requestSubtitle: 'Use your fingerprint to access your wallet',
+    requestTitle: 'Unlock wallet',
+    requestSubtitle: 'Use Face ID / Touch ID to unlock this account',
     authenticationTimeOut: 10, // 10 seconds timeout
   ),
 );
 
 final comprehensiveWallet = await auraWalletCore.createRandomHDWallet();
 ```
+
+> **iOS biometric behavior:** Biometric prompts protect wallet secret reads (for example, restoring and signing access), not every non-sensitive lookup. This keeps day-to-day account list access fast while still requiring the enrolled owner biometric (Face ID / Touch ID) before sensitive wallet operations can continue.
 
 ### Restoring an Aura Wallet
 
