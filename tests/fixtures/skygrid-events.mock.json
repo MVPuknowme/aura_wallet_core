@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-04-28T00:00:00Z",
+  "events": [
+    {
+      "id": "evt-001",
+      "title": "Liquidity sync",
+      "priority": 5,
+      "startsAt": "2026-04-29T09:00:00Z",
+      "durationMinutes": 60
+    },
+    {
+      "id": "evt-002",
+      "title": "Partner call",
+      "priority": 3,
+      "startsAt": "2026-04-29T09:30:00Z",
+      "durationMinutes": 30
+    },
+    {
+      "id": "evt-003",
+      "title": "Ops checkpoint",
+      "priority": 4,
+      "startsAt": "2026-04-29T10:00:00Z",
+      "durationMinutes": 45
+    },
+    {
+      "id": "evt-004",
+      "title": "Metrics review",
+      "priority": 2,
+      "startsAt": "2026-04-29T11:00:00Z",
+      "durationMinutes": 30
+    },
+    {
+      "id": "evt-005",
+      "title": "Backlog grooming",
+      "priority": 1,
+      "startsAt": "2026-04-29T11:15:00Z",
+      "durationMinutes": 30
+    }
+  ]
+}

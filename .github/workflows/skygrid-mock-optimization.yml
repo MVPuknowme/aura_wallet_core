@@ -1,0 +1,29 @@
+name: Skygrid mock optimization
+
+on:
+  schedule:
+    # Runs once weekly at 12:15 UTC every Monday
+    - cron: "15 12 * * 1"
+  workflow_dispatch:
+
+jobs:
+  optimize-mock-events:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Optimize Skygrid mock events
+        run: node core/skygrid-optimizer.js
+
+      - name: Upload optimized artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: skygrid-events-optimized
+          path: tests/fixtures/skygrid-events.optimized.json
+          if-no-files-found: error
