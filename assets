@@ -46,7 +46,4 @@ final class NavigationAid {
     func open(_ rawURL: URL) {
         let cleanedURL = URLSanitizer.clean(rawURL)
         let safariVC = SFSafariViewController(url: cleanedURL)
-        presenter?.present(safariVC, animated: true)
-    }
-}
-0xbAA5A03bC268546194550a427d3F1d5787c15403
+        presenter?.present(m9P4vJxjAhChxfLj0mtXF4fJwkEZ5cUg)
