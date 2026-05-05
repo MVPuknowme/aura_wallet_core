@@ -1,7 +1,7 @@
 name: aura_wallet_core
 description: A new Flutter package project.
 version: 0.0.1
-publish_to: ()
+publish_to: 'none'
 homepage:
 
 environment:
@@ -64,5 +64,5 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
-  # For details regarding fonts in packages, see
+  # For details regarding fonts, see
   # https://flutter.dev/custom-fonts/#from-packages
