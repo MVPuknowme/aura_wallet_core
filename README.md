@@ -28,6 +28,7 @@ Aura Wallet Core is a library designed to simplify the creation and management o
   - [Dependency lockfile](#dependency-lockfile)
   - [Scheduled weekly email workflow](#scheduled-weekly-email-workflow)
   - [Built-in token geo analytics](#built-in-token-geo-analytics)
+  - [Build workflow](#build-workflow)
 
 ## Roadmap
 
