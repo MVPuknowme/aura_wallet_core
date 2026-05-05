@@ -1,4 +1,5 @@
 import 'package:aura_wallet_core/src/config_options/biometric_options.dart';
+import 'package:aura_wallet_core/src/constants/aura_constants.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuraInternalStorage {
@@ -9,9 +10,10 @@ class AuraInternalStorage {
     IOSUserAuthenticationRequired? authenticationRequiredIOS;
     if (biometricOptions != null) {
       authenticationRequiredAndroid = UserAuthenticationRequiredAndroid(
-          bioMetricSubTitle: biometricOptions.requestSubtitle,
-          bioMetricTitle: biometricOptions.requestTitle,
-          userAuthenticationTimeout: biometricOptions.authenticationTimeOut);
+        bioMetricSubTitle: biometricOptions.requestSubtitle,
+        bioMetricTitle: biometricOptions.requestTitle,
+        userAuthenticationTimeout: biometricOptions.authenticationTimeOut,
+      );
 
       authenticationRequiredIOS = IOSUserAuthenticationRequired(
         localizedReason: biometricOptions.requestSubtitle,
@@ -33,7 +35,7 @@ class AuraInternalStorage {
     );
   }
 
-  factory AuraInternalStorage(BiometricOptions? biometricOptions) {
+  factory AuraInternalStorage([BiometricOptions? biometricOptions]) {
     return AuraInternalStorage._(biometricOptions);
   }
 
@@ -44,24 +46,27 @@ class AuraInternalStorage {
     sharedPreferencesName: 'aura_sdk_non_secure',
   );
 
-  Future<void> saveWalletToStorage(
-      {required String walletName,
-      required String walletAddress,
-      required String passphrase}) async {
+  Future<void> saveWalletToStorage({
+    required String walletName,
+    required String walletAddress,
+    required String passphrase,
+  }) async {
     await _storage.write(
-        key: walletName,
-        value: walletAddress,
-        aOptions: _getNonSecureAndroidOptions,
-        iOptions: _getNonSecureIosOptions);
+      key: walletName,
+      value: walletAddress,
+      aOptions: _getNonSecureAndroidOptions,
+      iOptions: _getNonSecureIosOptions,
+    );
 
     await _storage.write(key: walletAddress, value: passphrase);
   }
 
   Future<String?> readWalletPassPhrase({required String walletName}) async {
     String? walletAddress = await _storage.read(
-        key: walletName,
-        aOptions: _getNonSecureAndroidOptions,
-        iOptions: _getNonSecureIosOptions);
+      key: walletName,
+      aOptions: _getNonSecureAndroidOptions,
+      iOptions: _getNonSecureIosOptions,
+    );
     if (walletAddress == null) {
       return null;
     }
@@ -72,16 +77,24 @@ class AuraInternalStorage {
 
   Future<String?> getWalletAddress({required String walletName}) async {
     String? walletAddress = await _storage.read(
-        key: walletName,
-        aOptions: _getNonSecureAndroidOptions,
-        iOptions: _getNonSecureIosOptions);
+      key: walletName,
+      aOptions: _getNonSecureAndroidOptions,
+      iOptions: _getNonSecureIosOptions,
+    );
     return walletAddress;
+  }
+
+  Future<String?> readBech32Address({
+    String walletName = CONST_DEFAULT_WALLET_NAME,
+  }) {
+    return getWalletAddress(walletName: walletName);
   }
 
   Future<void> deleteWallet({required String walletName}) async {
     await _storage.delete(
-        key: walletName,
-        aOptions: _getNonSecureAndroidOptions,
-        iOptions: _getNonSecureIosOptions);
+      key: walletName,
+      aOptions: _getNonSecureAndroidOptions,
+      iOptions: _getNonSecureIosOptions,
+    );
   }
 }
