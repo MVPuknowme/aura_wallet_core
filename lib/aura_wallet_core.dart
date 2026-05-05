@@ -56,6 +56,11 @@ abstract class AuraWalletCore {
     String walletName = CONST_DEFAULT_WALLET_NAME,
   });
 
+  /// Compatibility shim for legacy example code
+  Future<AuraWallet?> loadCurrentWallet([String? _]) {
+    return loadStoredWallet();
+  }
+
   Future<void> removeWallet({
     String walletName = CONST_DEFAULT_WALLET_NAME,
   });
