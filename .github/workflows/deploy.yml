@@ -1,0 +1,94 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Existing or new release tag to publish artifacts to (for example, v0.0.1)"
+        required: true
+        default: "v0.0.1"
+      dry_run:
+        description: "Build artifacts without publishing a GitHub Release"
+        required: true
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: deploy-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    name: Build and publish release artifact
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Show Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze project source
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Generate API documentation
+        run: dart doc --output doc/api
+
+      - name: Package deployable artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          tar \
+            --exclude='./.git' \
+            --exclude='./.dart_tool' \
+            --exclude='./build' \
+            --exclude='./dist' \
+            --exclude='./doc/api' \
+            -czf dist/aura_wallet_core-${{ github.event.inputs.release_tag }}.tar.gz \
+            .
+          tar -czf dist/aura_wallet_core-docs-${{ github.event.inputs.release_tag }}.tar.gz doc/api
+          shasum -a 256 dist/* > dist/SHA256SUMS
+
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aura-wallet-core-${{ github.event.inputs.release_tag }}
+          path: dist/*
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: ${{ github.event.inputs.dry_run == 'false' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" dist/* --clobber
+          else
+            gh release create "$RELEASE_TAG" dist/* \
+              --title "Aura Wallet Core $RELEASE_TAG" \
+              --notes "Automated Aura Wallet Core deployment for $RELEASE_TAG."
+          fi

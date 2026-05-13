@@ -28,6 +28,7 @@ Aura Wallet Core is a library designed to simplify the creation and management o
   - [Dependency lockfile](#dependency-lockfile)
   - [Scheduled weekly email workflow](#scheduled-weekly-email-workflow)
   - [Built-in token geo analytics](#built-in-token-geo-analytics)
+  - [Deployment workflow](#deployment-workflow)
   - [Build workflow](#build-workflow)
 
 ## Roadmap
@@ -99,6 +100,13 @@ A GitHub Actions workflow sends a weekly status email every Monday at 12:00 UTC 
 - `EMAIL_TO_RECIPIENTS`: Comma-separated list of recipient addresses
 
 You can customize the email subject, body, or schedule in `.github/workflows/weekly-email.yml`. Manual `workflow_dispatch` runs accept an optional `dry_run` input (`true`/`false`), which lets you preview the workflow logs without actually sending an email. The workflow uses a `concurrency` group to ensure only one weekly email run is active at a time.
+
+
+## Deployment workflow
+
+Use the manual `Deploy` GitHub Actions workflow to build a release-ready Aura Wallet Core artifact. The workflow installs Flutter, resolves dependencies, verifies formatting, analyzes the package, runs tests, generates Dart API documentation, and uploads release archives plus SHA-256 checksums as workflow artifacts.
+
+To publish those archives to a GitHub Release, run the workflow with `dry_run` set to `false` and provide the target `release_tag` (for example, `v0.0.1`). Dry runs keep the generated archives attached only to the workflow run, which is useful for validating a deployment before publishing.
 
 ## Build workflow
 
