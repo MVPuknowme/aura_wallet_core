@@ -102,6 +102,19 @@ A GitHub Actions workflow sends a weekly status email every Monday at 12:00 UTC 
 You can customize the email subject, body, or schedule in `.github/workflows/weekly-email.yml`. Manual `workflow_dispatch` runs accept an optional `dry_run` input (`true`/`false`), which lets you preview the workflow logs without actually sending an email. The workflow uses a `concurrency` group to ensure only one weekly email run is active at a time.
 
 
+
+## SkyGrid preflight health standard (Gold/Silver/Bronze)
+
+Use the following approved wording in client-facing proof, invoices, and preflight summaries. The claims are intentionally tied to measurable signals already produced by the runtime checks, validator heartbeat payload, and ledger trace outputs.
+
+- **Gold health standard**: "All required preflight checks passed with no blocking findings. Validator heartbeat remained online with trust score at or above 0.90 and p95 latency at or below 200 ms during the measured window. Ledger and receipt trace evidence was generated without fallback-only status."
+- **Silver health standard**: "Required preflight checks passed with minor non-blocking findings. Validator heartbeat remained online with trust score from 0.75 to 0.89 and p95 latency from 201 ms to 350 ms during the measured window. Ledger and receipt trace evidence was generated, including documented fallbacks where applicable."
+- **Bronze health standard**: "Core preflight checks completed, but one or more quality targets remained below preferred thresholds. Validator heartbeat was intermittent or recorded trust score from 0.60 to 0.74, or p95 latency from 351 ms to 600 ms during the measured window. Ledger and receipt trace evidence exists, and open remediation items are attached to this report or invoice."
+
+### Unsupported wording to avoid
+
+Do not use absolute claims such as "guaranteed uptime", "zero risk", "fully secure", or "production perfect" in invoice-ready proof. Replace them with the measurable Gold/Silver/Bronze statements above plus the exact observation window and metric values.
+
 ## Deployment workflow
 
 Use the manual `Deploy` GitHub Actions workflow to build a release-ready Aura Wallet Core artifact. The workflow installs Flutter, resolves dependencies, verifies formatting, analyzes the package, runs tests, generates Dart API documentation, and uploads release archives plus SHA-256 checksums as workflow artifacts.
