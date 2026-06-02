@@ -1,5 +1,7 @@
 export 'src/config_options/token_analytics_config.dart';
 export 'src/core/type_data/token_analytics_models.dart';
+export 'src/core/services/skygrid_command_center_service.dart';
+export 'src/core/type_data/skygrid_dashboard_models.dart';
 export 'src/env/env.dart';
 
 import 'src/aura_internal_wallet_ipml.dart';

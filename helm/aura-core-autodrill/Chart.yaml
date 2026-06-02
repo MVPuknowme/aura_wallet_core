@@ -1,0 +1,6 @@
+apiVersion: v2
+name: aura-core-autodrill
+description: Review-first Helm chart for the Aura-Core SkyGrid autodrill command surface.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

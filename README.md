@@ -30,6 +30,7 @@ Aura Wallet Core is a library designed to simplify the creation and management o
   - [Built-in token geo analytics](#built-in-token-geo-analytics)
   - [Deployment workflow](#deployment-workflow)
   - [Build workflow](#build-workflow)
+  - [SkyGrid Edge command center](#skygrid-edge-command-center)
 
 ## Roadmap
 
@@ -124,6 +125,23 @@ To publish those archives to a GitHub Release, run the workflow with `dry_run` s
 ## Build workflow
 
 The repository build workflow is defined in `.github/workflows/dart.yml`. It runs on pushes and pull requests targeting `dev`, and now uses a `concurrency` group so only the latest build for the same ref stays active. Older in-progress runs for that ref are cancelled automatically to avoid duplicate GitHub Actions builds blocking each other.
+
+
+## SkyGrid Edge command center
+
+Aura Wallet Core now includes a dashboard-first SkyGrid command center standard for preparing Aura-Core / SkyGrid build and L2 execution artifacts. The exported `SkyGridCommandCenterService` builds a review-only preview that includes Helm chart status, validation commands, L2 script artifact metadata, redacted operator payloads, and receipt records.
+
+Repository artifacts follow the issue #8 target structure:
+
+- `dashboard/command-center/` documents the Edge-style operator control surface.
+- `dashboard/validation-panel/` lists lint, render, dry-run, and L2 review checks that must pass before execution.
+- `dashboard/deployment-review/` documents manifest and intent review expectations.
+- `dashboard/receipts/` documents post-submit receipt display requirements.
+- `helm/aura-core-autodrill/` contains the review-first Helm starter chart.
+- `scripts/l2/` contains reviewable JavaScript modules for preparing, signing, submitting, and verifying L2 intents without automatic wallet execution.
+- `api/drill-onramp`, `api/drill-offramp`, and `api/status` document the dashboard API lanes.
+
+The Web3 browser or wallet lane should be used only for explicit signing, transaction submission, and receipt verification after generated payloads have been reviewed.
 
 ## Basic Usage
 
