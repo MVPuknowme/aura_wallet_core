@@ -110,7 +110,9 @@ class AuraWalletCoreImpl implements AuraWalletCore {
         'Error restoring HD wallet: $e',
       );
     }
-  }  @override
+  }
+
+  @override
   Future<AuraWallet?> loadCurrentWallet([String? walletName]) {
     return loadStoredWallet(
       walletName: walletName ?? CONST_DEFAULT_WALLET_NAME,
