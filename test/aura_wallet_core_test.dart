@@ -5,7 +5,7 @@ void main() {
   group('Token analytics', () {
     test('builds a geo distribution summary for token holdings', () {
       final AuraWalletCore core = AuraWalletCore.create(
-        environment: AuraWalletCoreEnvironment.testnet,
+        environment: AuraWalletCoreEnvironment.testNet,
         tokenAnalyticsConfig: const TokenAnalyticsConfig(topRegionsLimit: 2),
       );
 
@@ -41,7 +41,7 @@ void main() {
 
     test('throws when analytics are disabled', () {
       final AuraWalletCore core = AuraWalletCore.create(
-        environment: AuraWalletCoreEnvironment.testnet,
+        environment: AuraWalletCoreEnvironment.testNet,
         tokenAnalyticsConfig: const TokenAnalyticsConfig(enabled: false),
       );
 

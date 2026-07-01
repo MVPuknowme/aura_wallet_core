@@ -110,6 +110,11 @@ class AuraWalletCoreImpl implements AuraWalletCore {
         'Error restoring HD wallet: $e',
       );
     }
+  }  @override
+  Future<AuraWallet?> loadCurrentWallet([String? walletName]) {
+    return loadStoredWallet(
+      walletName: walletName ?? CONST_DEFAULT_WALLET_NAME,
+    );
   }
 
   @override
@@ -165,6 +170,7 @@ class AuraWalletCoreImpl implements AuraWalletCore {
     return Storehouse.tokenAnalyticsService.analyzeGeoDistribution(holdings);
   }
 
+  @override
   Future<void> removeWallet(
       {String walletName = CONST_DEFAULT_WALLET_NAME}) async {
     try {
@@ -189,3 +195,4 @@ class ComprehensiveWalletImpl extends ComprehensiveWallet {
     required super.auraWallet,
   });
 }
+

@@ -44,7 +44,7 @@ class _CreateHdWalletPageState extends State<CreateHdWalletPage>
     showLoading();
     try {
       await handler.getWalletCore().createRandomHDWallet().then((wallet) {
-        handler.setBech32Address(wallet.auraWallet.wallet.bech32Address);
+        handler.setBech32Address(wallet.auraWallet.bech32Address);
         showDialog(
           context: context,
           builder: (context) {
@@ -120,8 +120,8 @@ class _CreateHdWalletPageState extends State<CreateHdWalletPage>
                           foregroundColor: Colors.black,
                         ),
                         onPressed: () =>
-                            copyText(wallet.auraWallet.wallet.bech32Address),
-                        child: Text(wallet.auraWallet.wallet.bech32Address),
+                            copyText(wallet.auraWallet.bech32Address),
+                        child: Text(wallet.auraWallet.bech32Address),
                       ),
                     ),
                     const SizedBox(

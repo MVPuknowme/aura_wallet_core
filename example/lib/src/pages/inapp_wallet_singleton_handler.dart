@@ -46,7 +46,7 @@ class InAppWalletProviderHandler {
 
         print('current wallet = ${currentWallet}');
 
-        await currentWallet?.removeCurrentWallet(_backupBech32Address);
+        await _walletCore.removeWallet();
       }catch(e){
         print('run nnn -- ${e.toString()}');
       }finally{
