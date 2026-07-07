@@ -66,52 +66,53 @@ class _RestoreHdWalletPageState extends State<RestoreHdWalletPage>
       showDialog(
         context: context,
         builder: (context) {
-            return Dialog(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              backgroundColor: Colors.white,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(left: 16, top: 32),
-                    width: double.infinity,
-                    child: const Text('Address'),
+          return Dialog(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            backgroundColor: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(left: 16, top: 32),
+                  width: double.infinity,
+                  child: const Text('Address'),
+                ),
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(
+                    left: 16,
+                    top: 4,
+                    right: 16,
                   ),
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(
-                      left: 16,
-                      top: 4,
-                      right: 16,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.all(8),
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
                     ),
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.all(8),
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                      ),
-                      onPressed: () => copyAddress(wallet.bech32Address),
-                      child: Text(wallet.bech32Address),
-                    ),
+                    onPressed: () => copyAddress(wallet.bech32Address),
+                    child: Text(wallet.bech32Address),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/wallet_detail',
-                      );
-                    },
-                    child: const Text('OK'),
-                  ),
-                ],
-              ),
-            );
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/wallet_detail',
+                    );
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
         },
       );
     } catch (e) {

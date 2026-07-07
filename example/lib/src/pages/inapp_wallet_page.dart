@@ -24,10 +24,11 @@ class _InAppWalletPageState extends State<InAppWalletPage>
       showLoading();
       try {
         final bech32Address = await AuraInternalStorage().readBech32Address();
+        if (!mounted) return;
+
         debugPrint(bech32Address);
 
         if (bech32Address == null) return;
-        if (!mounted) return;
 
         InAppWalletProviderHandler.instance.setBech32Address(bech32Address);
 

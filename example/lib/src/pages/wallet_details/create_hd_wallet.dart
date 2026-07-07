@@ -50,117 +50,118 @@ class _CreateHdWalletPageState extends State<CreateHdWalletPage>
       showDialog(
         context: context,
         builder: (context) {
-            return Dialog(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              backgroundColor: Colors.white,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 16, top: 16),
-                      width: double.infinity,
-                      child: const Text('Private Key'),
+          return Dialog(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            backgroundColor: Colors.white,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(left: 16, top: 16),
+                    width: double.infinity,
+                    child: const Text('Private Key'),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.only(
+                      left: 16,
+                      top: 4,
+                      right: 16,
                     ),
-                    Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(
-                        left: 16,
-                        top: 4,
-                        right: 16,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.all(8),
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                       ),
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.all(8),
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                        ),
-                        onPressed: () => copyText(wallet.privateKey),
-                        child: Text(wallet.privateKey),
+                      onPressed: () => copyText(wallet.privateKey),
+                      child: Text(wallet.privateKey),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 16, top: 16),
+                    width: double.infinity,
+                    child: const Text('PassPhase'),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.only(
+                      left: 16,
+                      top: 4,
+                      right: 16,
+                    ),
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.all(8),
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                       ),
+                      onPressed: () => copyText(wallet.mnemonic),
+                      child: Text(wallet.mnemonic),
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 16, top: 16),
-                      width: double.infinity,
-                      child: const Text('PassPhase'),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 16, top: 16),
+                    width: double.infinity,
+                    child: const Text('Address'),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.only(
+                      left: 16,
+                      top: 4,
+                      right: 16,
                     ),
-                    Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(
-                        left: 16,
-                        top: 4,
-                        right: 16,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.all(8),
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                       ),
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.all(8),
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                        ),
-                        onPressed: () => copyText(wallet.mnemonic),
-                        child: Text(wallet.mnemonic),
-                      ),
+                      onPressed: () => copyText(wallet.auraWallet.bech32Address),
+                      child: Text(wallet.auraWallet.bech32Address),
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 16, top: 16),
-                      width: double.infinity,
-                      child: const Text('Address'),
-                    ),
-                    Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(
-                        left: 16,
-                        top: 4,
-                        right: 16,
-                      ),
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.all(8),
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                        ),
-                        onPressed: () =>
-                            copyText(wallet.auraWallet.bech32Address),
-                        child: Text(wallet.auraWallet.bech32Address),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(
-                          context,
-                          '/wallet_detail',
-                        );
-                      },
-                      child: const Text('OK'),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(
+                        context,
+                        '/wallet_detail',
+                      );
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
               ),
-            );
+            ),
+          );
         },
       );
     } catch (e) {
       debugPrint(e.toString());
       if (mounted) {
         showDialog(
-        context: context,
-        builder: (context) {
+          context: context,
+          builder: (context) {
             return Dialog(
               elevation: 0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
+                borderRadius: BorderRadius.circular(20),
+              ),
               backgroundColor: Colors.white,
               child: MessageDialog(
                 message: e.toString(),
               ),
             );
-        },
-      );
+          },
+        );
       }
     } finally {
       hideLoading();
