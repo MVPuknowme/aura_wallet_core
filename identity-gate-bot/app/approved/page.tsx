@@ -1,0 +1,1 @@
+export default function ApprovedPage() { return <main className="mx-auto max-w-2xl p-8"><h1 className="text-3xl font-bold">Approved</h1><p className="mt-4 text-slate-300">If MVP approved your request, use the one-time token and instructions returned by the approval workflow. Tokens expire and should not be shared.</p></main>; }

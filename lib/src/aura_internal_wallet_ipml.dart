@@ -1,25 +1,19 @@
 import 'package:alan/alan.dart';
 
-import 'package:aura_wallet_core/src/utils/aura_wallet_utils.dart';
-
 import 'package:flutter/services.dart';
 import 'package:hex/hex.dart';
 import '../aura_wallet_core.dart';
 import 'config_options/biometric_options.dart';
 import 'config_options/currency_conversion_config.dart';
 import 'config_options/payment_processing_rules.dart';
-import 'config_options/token_analytics_config.dart';
 import 'constants/aura_constants.dart';
 import 'constants/error_constants.dart';
 import 'core/exceptions/aura_internal_exception.dart';
 
 import 'core/repo/store_house.dart';
 import 'core/utils/aura_inapp_wallet_helper.dart';
-import 'core/utils/aura_internal_storage.dart';
 import 'entities/aura_wallet.dart';
-import 'core/type_data/token_analytics_models.dart';
 import 'entities/aura_wallet_impl.dart';
-import 'env/env.dart';
 
 class AuraWalletCoreImpl implements AuraWalletCore {
   AuraWalletCoreImpl({
@@ -110,7 +104,9 @@ class AuraWalletCoreImpl implements AuraWalletCore {
         'Error restoring HD wallet: $e',
       );
     }
-  }  @override
+  }
+
+  @override
   Future<AuraWallet?> loadCurrentWallet([String? walletName]) {
     return loadStoredWallet(
       walletName: walletName ?? CONST_DEFAULT_WALLET_NAME,
@@ -195,4 +191,3 @@ class ComprehensiveWalletImpl extends ComprehensiveWallet {
     required super.auraWallet,
   });
 }
-

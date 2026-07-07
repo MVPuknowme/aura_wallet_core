@@ -281,3 +281,7 @@ Please report any issues or provide feedback on [GitHub](https://github.com/aura
 ## License
 
 This library is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## SKYGRID/Aura-Core Identity Gate Bot
+
+A Next.js MVP for consent-based pre-contact verification lives in `identity-gate-bot/`. See `identity-gate-bot/README.md` for setup, privacy boundaries, Prisma schema, API routes, and admin review flow.
