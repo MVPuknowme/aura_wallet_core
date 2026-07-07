@@ -57,17 +57,16 @@ class _RestoreHdWalletPageState extends State<RestoreHdWalletPage>
 
   void doRestoreWallet() async {
     try {
-      await handler
-          .getWalletCore()
-          .restoreHDWallet(
+      final wallet = await handler.getWalletCore().restoreHDWallet(
             passPhrase: passpharseController.text,
-          )
-          .then((wallet) {
-        handler.setBech32Address(wallet.bech32Address);
-        showDialog(
-          context: context,
-          builder: (context) {
-            return Dialog(
+          );
+      if (!mounted) return;
+
+      handler.setBech32Address(wallet.bech32Address);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
               elevation: 0,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
@@ -112,12 +111,12 @@ class _RestoreHdWalletPageState extends State<RestoreHdWalletPage>
                   ),
                 ],
               ),
-            );
-          },
-        );
-      });
+          );
+        },
+      );
     } catch (e) {
       errorMsg = e.toString();
+      if (!mounted) return;
       setState(() {});
     }
   }
