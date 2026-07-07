@@ -1,5 +1,5 @@
 import 'package:grpc/service_api.dart' as $grpc;
-import 'dart:developer' as auraLog;
+import 'dart:developer' as aura_log;
 
 class LogInter implements $grpc.ClientInterceptor {
   @override
@@ -17,7 +17,7 @@ class LogInter implements $grpc.ClientInterceptor {
       Q request,
       $grpc.CallOptions options,
       $grpc.ClientUnaryInvoker<Q, R> invoker) {
-    auraLog.log(
+    aura_log.log(
       'Grpc request. '
       'method: ${method.path}, '
       'request: $request',
@@ -25,7 +25,7 @@ class LogInter implements $grpc.ClientInterceptor {
     final response = invoker(method, request, options);
 
     response.then((r) {
-      auraLog.log(
+      aura_log.log(
         'Grpc response. '
         'method: ${method.path}, '
         'response: ${r.toString()}',

@@ -10,8 +10,8 @@ import '../../wallet_objects.dart';
 
 import 'package:alan/proto/cosmos/bank/v1beta1/export.dart';
 import 'package:alan/proto/cosmos/bank/v1beta1/export.dart' as bank;
-import 'package:alan/proto/cosmwasm/wasm/v1/export.dart' as cosMWasm;
-import 'package:alan/proto/cosmos/tx/v1beta1/export.dart' as auraTx;
+import 'package:alan/proto/cosmwasm/wasm/v1/export.dart' as cos_wasm;
+import 'package:alan/proto/cosmos/tx/v1beta1/export.dart' as aura_tx;
 
 import '../constants/error_constants.dart';
 import '../core/exceptions/aura_internal_exception.dart';
@@ -171,7 +171,7 @@ class AuraWalletImpl extends AuraWallet {
       String? address, AuraTransactionType transactionType) async {
     try {
       var networkInfo = Storehouse.networkInfo;
-      final request = auraTx.GetTxsEventRequest(
+      final request = aura_tx.GetTxsEventRequest(
         events: [
           if (transactionType == AuraTransactionType.send)
             "transfer.sender='$address'"
@@ -181,7 +181,7 @@ class AuraWalletImpl extends AuraWallet {
         pagination: PageRequest(offset: 0.toInt64(), limit: 100.toInt64()),
       );
 
-      final client = auraTx.ServiceClient(networkInfo.gRPCChannel,
+      final client = aura_tx.ServiceClient(networkInfo.gRPCChannel,
           interceptors: [LogInter()]);
 
       final GetTxsEventResponse response = await client.getTxsEvent(request);
@@ -191,7 +191,7 @@ class AuraWalletImpl extends AuraWallet {
               response.txResponses, transactionType);
 
       return listData;
-    } catch (e, s) {
+    } catch (e) {
       // Handle any exceptions that might occur while fetching transactions.
       return null;
     }
@@ -222,22 +222,22 @@ class AuraWalletImpl extends AuraWallet {
       var networkInfo = Storehouse.networkInfo;
       List<int> queryData = jsonEncode(query).codeUnits;
 
-      final cosMWasm.QueryClient client = cosMWasm.QueryClient(
+      final cos_wasm.QueryClient client = cos_wasm.QueryClient(
         networkInfo.gRPCChannel,
         interceptors: [LogInter()],
       );
 
-      final cosMWasm.QuerySmartContractStateRequest request =
-          cosMWasm.QuerySmartContractStateRequest(
+      final cos_wasm.QuerySmartContractStateRequest request =
+          cos_wasm.QuerySmartContractStateRequest(
         address: contractAddress,
         queryData: queryData,
       );
 
-      final cosMWasm.QuerySmartContractStateResponse response =
+      final cos_wasm.QuerySmartContractStateResponse response =
           await client.smartContractState(request);
 
       return String.fromCharCodes(response.data);
-    } catch (e, s) {
+    } catch (e) {
       // Handle any exceptions that might occur during the query.
       throw AuraInternalError(ErrorCode.QueryFailed, 'Query failed: $e');
     }
@@ -303,7 +303,7 @@ class AuraWalletImpl extends AuraWallet {
         await Storehouse.storage.getWalletAddress(walletName: walletName);
 
     // Create the execute contract message.
-    final cosMWasm.MsgExecuteContract request = cosMWasm.MsgExecuteContract(
+    final cos_wasm.MsgExecuteContract request = cos_wasm.MsgExecuteContract(
       contract: contractAddress,
       sender: bech32Address,
       msg: msg,
@@ -417,7 +417,7 @@ class AuraWalletImpl extends AuraWallet {
       );
 
       return signedTx;
-    } catch (e, s) {
+    } catch (e) {
       // Handle any error that occurs during transaction signing.
       String errorMessage =
           e is PlatformException ? '[${e.code}] ${e.message}' : e.toString();

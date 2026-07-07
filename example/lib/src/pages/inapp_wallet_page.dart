@@ -24,7 +24,7 @@ class _InAppWalletPageState extends State<InAppWalletPage>
       showLoading();
       try {
         await AuraInternalStorage().readBech32Address().then((bech32Address) {
-          print(bech32Address);
+          debugPrint(bech32Address);
 
           if (bech32Address == null) return;
 
@@ -37,7 +37,7 @@ class _InAppWalletPageState extends State<InAppWalletPage>
         });
       } catch (e) {
         // keep page
-        print(e.toString());
+        debugPrint(e.toString());
       } finally {
         hideLoading();
       }

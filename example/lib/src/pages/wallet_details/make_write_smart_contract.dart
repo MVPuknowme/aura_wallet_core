@@ -95,7 +95,7 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                     _triggerController.text.trim(): param,
                   };
 
-                  print(executeMessage);
+                  debugPrint(executeMessage);
                   final currentWallet = await handler
                       .getWalletCore()
                       .loadCurrentWallet(handler.bech32Address);

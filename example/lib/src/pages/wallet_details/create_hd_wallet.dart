@@ -144,7 +144,7 @@ class _CreateHdWalletPageState extends State<CreateHdWalletPage>
         );
       });
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
       if (context.mounted) {
         showDialog(
           context: context,
