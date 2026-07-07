@@ -1,5 +1,6 @@
 import 'package:aura_wallet_core/aura_wallet_core.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:aura_wallet_core/src/core/exceptions/aura_internal_exception.dart';
 
 void main() {
   group('Token analytics', () {
@@ -56,7 +57,7 @@ void main() {
             ),
           ],
         ),
-        throwsA(isA<Exception>()),
+        throwsA(isA<AuraInternalError>()),
       );
     });
   });
