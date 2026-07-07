@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body { @apply bg-slate-950 text-slate-100; }
+input, select, textarea { @apply w-full rounded-lg border border-slate-700 bg-slate-900 p-3 text-slate-100; }
+label { @apply text-sm font-medium text-slate-200; }
