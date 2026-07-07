@@ -1,4 +1,4 @@
-class AuraInternalError extends Error {
+class AuraInternalError implements Exception {
   final String message;
   final int errorCode;
 
