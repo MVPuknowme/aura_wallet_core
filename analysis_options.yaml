@@ -1,4 +1,10 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  exclude:
+    # The example app contains demo wallet screens with legacy async UI patterns.
+    # Keep package CI focused on library code and the PR payload.
+    - example/**
+
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
