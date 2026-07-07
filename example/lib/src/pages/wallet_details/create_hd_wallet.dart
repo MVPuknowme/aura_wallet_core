@@ -43,11 +43,13 @@ class _CreateHdWalletPageState extends State<CreateHdWalletPage>
   void doGeneWallet() async {
     showLoading();
     try {
-      await handler.getWalletCore().createRandomHDWallet().then((wallet) {
-        handler.setBech32Address(wallet.auraWallet.bech32Address);
-        showDialog(
-          context: context,
-          builder: (context) {
+      final wallet = await handler.getWalletCore().createRandomHDWallet();
+      if (!mounted) return;
+
+      handler.setBech32Address(wallet.auraWallet.bech32Address);
+      showDialog(
+        context: context,
+        builder: (context) {
             return Dialog(
               elevation: 0,
               shape: RoundedRectangleBorder(
@@ -140,15 +142,14 @@ class _CreateHdWalletPageState extends State<CreateHdWalletPage>
                 ),
               ),
             );
-          },
-        );
-      });
+        },
+      );
     } catch (e) {
-      print(e.toString());
-      if (context.mounted) {
+      debugPrint(e.toString());
+      if (mounted) {
         showDialog(
-          context: context,
-          builder: (context) {
+        context: context,
+        builder: (context) {
             return Dialog(
               elevation: 0,
               shape: RoundedRectangleBorder(
@@ -158,8 +159,8 @@ class _CreateHdWalletPageState extends State<CreateHdWalletPage>
                 message: e.toString(),
               ),
             );
-          },
-        );
+        },
+      );
       }
     } finally {
       hideLoading();

@@ -94,8 +94,11 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                     _triggerController.text.trim(): param,
                   };
 
-                  print(executeMessage);
-                  final currentWallet = await handler.getWalletCore().loadCurrentWallet(handler.bech32Address);
+                  debugPrint(executeMessage.toString());
+                  final currentWallet = await handler
+                      .getWalletCore()
+                      .loadCurrentWallet(handler.bech32Address);
+                  if (!mounted) return;
 
                   await currentWallet!.makeInteractiveWriteSmartContract(
                     contractAddress: contractAddress,
@@ -105,6 +108,8 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                     ],
                   ).then((value) {
                     hash = value;
+                    if (!mounted) return;
+
                     showDialog(
                       context: context,
                       builder: (context) {
@@ -119,6 +124,8 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                       },
                     );
                   }).onError((error, stackTrace) {
+                    if (!mounted) return;
+
                     showDialog(
                       context: context,
                       builder: (context) {
@@ -145,10 +152,16 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                 onPressed: () async {
                   showLoading();
                   try {
-                    final currentWallet = await handler.getWalletCore().loadCurrentWallet(handler.bech32Address);
+                    final currentWallet = await handler
+                        .getWalletCore()
+                        .loadCurrentWallet(handler.bech32Address);
+                    if (!mounted) return;
+
                     await currentWallet!
                         .verifyTxHash(txHash: hash)
                         .then((isSuccess) {
+                      if (!mounted) return;
+
                       showDialog(
                         context: context,
                         builder: (context) {
@@ -166,7 +179,7 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                       );
                     });
                   } catch (e) {
-                    if(context.mounted){
+                    if (mounted) {
                       showDialog(
                         context: context,
                         builder: (context) {

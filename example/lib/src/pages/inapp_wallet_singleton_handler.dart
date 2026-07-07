@@ -1,4 +1,3 @@
-import 'package:aura_wallet_core/aura_environment.dart';
 import 'package:aura_wallet_core/aura_wallet_core.dart';
 import 'package:flutter/material.dart';
 
@@ -41,14 +40,14 @@ class InAppWalletProviderHandler {
   void checkValidBech32Address()async{
     if(bech32Address.isEmpty){
       try{
-        print(_backupBech32Address);
+        debugPrint(_backupBech32Address);
         final currentWallet = await _walletCore.loadCurrentWallet(_backupBech32Address);
 
-        print('current wallet = ${currentWallet}');
+        debugPrint('current wallet = $currentWallet');
 
         await _walletCore.removeWallet();
       }catch(e){
-        print('run nnn -- ${e.toString()}');
+        debugPrint('run nnn -- ${e.toString()}');
       }finally{
         _backupBech32Address = bech32Address;
         for(final callback in _listeners){

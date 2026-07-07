@@ -110,9 +110,9 @@ class _MakeTransactionPageState extends State<MakeTransactionPage>
       );
 
       if (response) {
-        print("success");
+        debugPrint("success");
       } else {
-        print("fail");
+        debugPrint("fail");
       }
     }catch(e){
       errorMsg = e.toString();

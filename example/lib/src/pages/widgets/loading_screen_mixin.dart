@@ -7,7 +7,7 @@ mixin ScreenLoaderMixin<T extends StatefulWidget> on State<T> {
 
   Widget buildLoader() {
     return Container(
-      color: Colors.black.withOpacity(0.3),
+      color: Colors.black.withValues(alpha: 0.3),
       child: const Center(
         child: SizedBox(
           width: 72,

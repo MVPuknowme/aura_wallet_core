@@ -102,6 +102,8 @@ class _MakeQuerySmartContractState extends State<MakeQuerySmartContract>
                   final currentWallet = await handler
                       .getWalletCore()
                       .loadCurrentWallet(handler.bech32Address);
+                  if (!mounted) return;
+
                   await currentWallet!
                       .makeInteractiveQuerySmartContract(
                         contractAddress: contractAddress,
@@ -109,6 +111,7 @@ class _MakeQuerySmartContractState extends State<MakeQuerySmartContract>
                       )
                       .then((res) {
                         final Map<String, dynamic> json = jsonDecode(res);
+                        if (!mounted) return;
 
                         showDialog(
                           context: context,
@@ -138,6 +141,8 @@ class _MakeQuerySmartContractState extends State<MakeQuerySmartContract>
                         () => hideLoading(),
                       )
                       .onError((error, stackTrace) {
+                        if (!mounted) return;
+
                         showDialog(
                           context: context,
                           builder: (context) {
