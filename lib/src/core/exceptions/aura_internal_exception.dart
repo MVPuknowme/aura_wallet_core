@@ -1,4 +1,4 @@
-class AuraInternalError extends Error {
+﻿class AuraInternalError implements Exception {
   final String message;
   final int errorCode;
 
@@ -11,3 +11,4 @@ class AuraInternalError extends Error {
     return '[InternalError][$errorCode] - $message';
   }
 }
+
