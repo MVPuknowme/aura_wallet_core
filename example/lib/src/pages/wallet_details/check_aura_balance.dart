@@ -13,7 +13,8 @@ class _CheckHDWalletBalanceState extends State<CheckHDWalletBalance> {
   String walletBalance = '';
   String? errorMsg;
 
-  final InAppWalletProviderHandler handler = InAppWalletProviderHandler.instance;
+  final InAppWalletProviderHandler handler =
+      InAppWalletProviderHandler.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +64,9 @@ class _CheckHDWalletBalanceState extends State<CheckHDWalletBalance> {
   void doCheck() async {
     errorMsg = null;
     try {
-      final currentWallet = await handler.getWalletCore().loadCurrentWallet(handler.bech32Address);
+      final currentWallet = await handler
+          .getWalletCore()
+          .loadCurrentWallet(handler.bech32Address);
       final String balance = await currentWallet?.checkWalletBalance() ?? '';
       setState(() {
         walletBalance = balance;

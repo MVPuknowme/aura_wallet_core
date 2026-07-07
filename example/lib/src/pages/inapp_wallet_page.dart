@@ -46,7 +46,8 @@ class _InAppWalletPageState extends State<InAppWalletPage>
 
   @override
   void dispose() {
-    InAppWalletProviderHandler.instance.removeListener(_listenBech32AddressChange);
+    InAppWalletProviderHandler.instance
+        .removeListener(_listenBech32AddressChange);
     super.dispose();
   }
 

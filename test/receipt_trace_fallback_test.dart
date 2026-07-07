@@ -1,4 +1,4 @@
-﻿import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:aura_wallet_core/src/core/services/receipt_trace_service_fallback.dart';
 import 'package:aura_wallet_core/src/core/services/wallet_ledger_service.dart';
 import 'package:aura_wallet_core/src/core/type_data/wallet_gate_models.dart';
@@ -39,4 +39,3 @@ void main() {
     expect(ledger.entries.first.status, 'trace_only_confirmed');
   });
 }
-

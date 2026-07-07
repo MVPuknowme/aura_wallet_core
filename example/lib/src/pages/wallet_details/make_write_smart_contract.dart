@@ -23,7 +23,8 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
 
   String hash = '';
 
-  final InAppWalletProviderHandler handler = InAppWalletProviderHandler.instance;
+  final InAppWalletProviderHandler handler =
+      InAppWalletProviderHandler.instance;
 
   @override
   void initState() {
@@ -95,7 +96,9 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                   };
 
                   print(executeMessage);
-                  final currentWallet = await handler.getWalletCore().loadCurrentWallet(handler.bech32Address);
+                  final currentWallet = await handler
+                      .getWalletCore()
+                      .loadCurrentWallet(handler.bech32Address);
 
                   await currentWallet!.makeInteractiveWriteSmartContract(
                     contractAddress: contractAddress,
@@ -145,7 +148,9 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                 onPressed: () async {
                   showLoading();
                   try {
-                    final currentWallet = await handler.getWalletCore().loadCurrentWallet(handler.bech32Address);
+                    final currentWallet = await handler
+                        .getWalletCore()
+                        .loadCurrentWallet(handler.bech32Address);
                     await currentWallet!
                         .verifyTxHash(txHash: hash)
                         .then((isSuccess) {
@@ -166,7 +171,7 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                       );
                     });
                   } catch (e) {
-                    if(context.mounted){
+                    if (context.mounted) {
                       showDialog(
                         context: context,
                         builder: (context) {

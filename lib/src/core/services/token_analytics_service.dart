@@ -21,7 +21,8 @@ class TokenAnalyticsService {
       );
     }
 
-    final Map<String, List<TokenHolding>> grouped = <String, List<TokenHolding>>{};
+    final Map<String, List<TokenHolding>> grouped =
+        <String, List<TokenHolding>>{};
     for (final TokenHolding holding in holdings) {
       final String geography = holding.geography.trim().toUpperCase();
       grouped.putIfAbsent(geography, () => <TokenHolding>[]).add(holding);
@@ -39,20 +40,18 @@ class TokenAnalyticsService {
       );
     }
 
-    final List<TokenRegionBreakdown> regions = grouped.entries
-        .map((entry) {
-          final double marketValue = entry.value.fold<double>(
-            0,
-            (double sum, TokenHolding holding) => sum + holding.marketValue,
-          );
-          return TokenRegionBreakdown(
-            geography: entry.key,
-            marketValue: marketValue,
-            allocation: marketValue / totalMarketValue,
-            tokenCount: entry.value.length,
-          );
-        })
-        .toList()
+    final List<TokenRegionBreakdown> regions = grouped.entries.map((entry) {
+      final double marketValue = entry.value.fold<double>(
+        0,
+        (double sum, TokenHolding holding) => sum + holding.marketValue,
+      );
+      return TokenRegionBreakdown(
+        geography: entry.key,
+        marketValue: marketValue,
+        allocation: marketValue / totalMarketValue,
+        tokenCount: entry.value.length,
+      );
+    }).toList()
       ..sort((a, b) => b.marketValue.compareTo(a.marketValue));
 
     final List<TokenRegionBreakdown> limitedRegions =

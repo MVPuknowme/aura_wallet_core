@@ -58,7 +58,8 @@ class SkyGridCommandCenterService {
         L2ScriptArtifact(
           name: 'verifyReceipt',
           path: 'scripts/l2/verifyReceipt.js',
-          purpose: 'Verifies and formats transaction receipts for dashboard review.',
+          purpose:
+              'Verifies and formats transaction receipts for dashboard review.',
           requiresWalletApproval: false,
           autoExecutes: false,
         ),

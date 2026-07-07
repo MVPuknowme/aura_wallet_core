@@ -14,7 +14,8 @@ class _TransactionHistoryState extends State<TransactionHistory> {
 
   String? errorMsg;
 
-  final InAppWalletProviderHandler handler = InAppWalletProviderHandler.instance;
+  final InAppWalletProviderHandler handler =
+      InAppWalletProviderHandler.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +55,9 @@ class _TransactionHistoryState extends State<TransactionHistory> {
 
   Future<void> doLoadHistory() async {
     try {
-      final currentWallet = await handler.getWalletCore().loadCurrentWallet(handler.bech32Address);
+      final currentWallet = await handler
+          .getWalletCore()
+          .loadCurrentWallet(handler.bech32Address);
       final List<AuraTransaction> list =
           await currentWallet!.checkWalletHistory();
       setState(() {

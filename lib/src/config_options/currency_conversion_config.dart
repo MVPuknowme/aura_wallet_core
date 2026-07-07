@@ -52,8 +52,10 @@ class CurrencyConversionConfig {
       return null;
     }
 
-    final String prefix = context != null && context.isNotEmpty ? '$context: ' : '';
-    final String noteText = notes != null && notes!.isNotEmpty ? ' ($notes)' : '';
+    final String prefix =
+        context != null && context.isNotEmpty ? '$context: ' : '';
+    final String noteText =
+        notes != null && notes!.isNotEmpty ? ' ($notes)' : '';
     return '$prefix${issues.join('; ')}$noteText'.trim();
   }
 }

@@ -47,7 +47,8 @@ class _MakeTransactionPageState extends State<MakeTransactionPage>
               child: Text('Make Transaction HD Wallet'),
             ),
             errorMsg == null
-                ? TransactionFromWidget(address: handler.bech32Address, amount: amount)
+                ? TransactionFromWidget(
+                    address: handler.bech32Address, amount: amount)
                 : Container(
                     margin: const EdgeInsets.only(top: 32),
                     height: 50,
@@ -81,7 +82,9 @@ class _MakeTransactionPageState extends State<MakeTransactionPage>
     showLoading();
     errorMsg = null;
     try {
-      final currentWallet = await handler.getWalletCore().loadCurrentWallet(handler.bech32Address);
+      final currentWallet = await handler
+          .getWalletCore()
+          .loadCurrentWallet(handler.bech32Address);
       final String amountStr = await currentWallet?.checkWalletBalance() ?? '';
       double? amountData = double.tryParse(amountStr);
       setState(() {
@@ -96,11 +99,13 @@ class _MakeTransactionPageState extends State<MakeTransactionPage>
 
   void doSend() async {
     showLoading();
-    try{
+    try {
       String toAddress = controller.textEditingController.text;
       int amount = (controller.amount * 1000000).toInt();
 
-      final currentWallet = await handler.getWalletCore().loadCurrentWallet(handler.bech32Address);
+      final currentWallet = await handler
+          .getWalletCore()
+          .loadCurrentWallet(handler.bech32Address);
 
       final tx = await currentWallet!.makeTransaction(
           toAddress: toAddress, amount: amount.toString(), fee: '200');
@@ -114,7 +119,7 @@ class _MakeTransactionPageState extends State<MakeTransactionPage>
       } else {
         print("fail");
       }
-    }catch(e){
+    } catch (e) {
       errorMsg = e.toString();
     }
     hideLoading();

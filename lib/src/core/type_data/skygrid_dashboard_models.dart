@@ -101,7 +101,8 @@ class SkyGridCommandCenterPreview {
       'mode': mode.name,
       'helm_status': helmStatus.toJson(),
       'l2_scripts': l2Scripts.map((script) => script.toJson()).toList(),
-      'validation_checks': validationChecks.map((check) => check.toJson()).toList(),
+      'validation_checks':
+          validationChecks.map((check) => check.toJson()).toList(),
       'operator_payload': operatorPayload,
       'wallet_signing_allowed': walletSigningAllowed,
       'contains_secrets': containsSecrets,

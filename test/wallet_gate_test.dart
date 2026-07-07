@@ -4,7 +4,8 @@ import 'package:aura_wallet_core/src/core/services/wallet_ledger_service.dart';
 import 'package:aura_wallet_core/src/core/type_data/wallet_gate_models.dart';
 
 void main() {
-  test('builds deterministic starter receipt trace and records ledger entry', () {
+  test('builds deterministic starter receipt trace and records ledger entry',
+      () {
     final timestamp = DateTime.parse('2026-04-13T07:20:00.000Z');
 
     final trace = buildReceiptTrace(

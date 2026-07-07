@@ -197,4 +197,3 @@ class ComprehensiveWalletImpl extends ComprehensiveWallet {
     required super.auraWallet,
   });
 }
-
