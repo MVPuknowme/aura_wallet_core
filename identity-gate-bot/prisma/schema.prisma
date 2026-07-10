@@ -1,41 +1,78 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "sqlite" url = env("DATABASE_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
 
-enum RequestStatus { PENDING APPROVED DENIED BLOCKED }
-enum LocalStatus { local not_local prefer_not_to_say }
-enum ContactMethod { email phone zangi other }
-enum ProofMethod { passphrase trusted_referral business_email id_check video_check none }
-enum DecisionAction { CREATED APPROVED DENIED BLOCKED RETENTION_DELETED }
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  DENIED
+  BLOCKED
+}
+
+enum LocalStatus {
+  local
+  not_local
+  prefer_not_to_say
+}
+
+enum ContactMethod {
+  email
+  phone
+  zangi
+  other
+}
+
+enum ProofMethod {
+  passphrase
+  trusted_referral
+  business_email
+  id_check
+  video_check
+  none
+}
+
+enum DecisionAction {
+  CREATED
+  APPROVED
+  DENIED
+  BLOCKED
+  RETENTION_DELETED
+}
 
 model VerificationRequest {
-  id                 String        @id @default(cuid())
-  claimedName        String
-  reasonForContact   String
-  localStatus        LocalStatus
-  contactMethod      ContactMethod
-  contactValue       String
-  proofMethod        ProofMethod
-  proofDetails       String?
-  consentGiven       Boolean
-  coarseLocation     String?
-  riskScore          Int
-  riskReasons        String
-  status             RequestStatus @default(PENDING)
-  oneTimeTokenHash   String?
-  tokenExpiresAt     DateTime?
-  decisionNote       String?
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
-  decidedAt          DateTime?
-  auditLogs          AuditLog[]
+  id               String        @id @default(cuid())
+  claimedName      String
+  reasonForContact String
+  localStatus      LocalStatus
+  contactMethod    ContactMethod
+  contactValue     String
+  proofMethod      ProofMethod
+  proofDetails     String?
+  consentGiven     Boolean
+  coarseLocation   String?
+  riskScore        Int
+  riskReasons      String
+  status           RequestStatus @default(PENDING)
+  oneTimeTokenHash String?
+  tokenExpiresAt   DateTime?
+  decisionNote     String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  decidedAt        DateTime?
+  auditLogs        AuditLog[]
 }
 
 model AuditLog {
-  id        String         @id @default(cuid())
+  id        String               @id @default(cuid())
   requestId String?
   request   VerificationRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
   action    DecisionAction
   actor     String
   note      String?
-  createdAt DateTime       @default(now())
+  createdAt DateTime             @default(now())
 }

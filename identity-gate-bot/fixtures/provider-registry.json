@@ -1,0 +1,38 @@
+[
+  {
+    "provider_id": "att-sandbox",
+    "display_name": "AT&T Sandbox Placeholder",
+    "environment": "sandbox",
+    "allowed_event_types": ["outage.health.signal", "emergency.routing.signal", "system.health.signal"],
+    "rate_limit_plan": "sandbox-standard",
+    "status": "active",
+    "created_at": "2026-07-10T00:00:00Z"
+  },
+  {
+    "provider_id": "verizon-sandbox",
+    "display_name": "Verizon Sandbox Placeholder",
+    "environment": "sandbox",
+    "allowed_event_types": ["outage.health.signal", "network.continuity.signal", "system.health.signal"],
+    "rate_limit_plan": "sandbox-standard",
+    "status": "active",
+    "created_at": "2026-07-10T00:00:00Z"
+  },
+  {
+    "provider_id": "municipal-emergency-sandbox",
+    "display_name": "Municipal Emergency Sandbox Placeholder",
+    "environment": "pilot",
+    "allowed_event_types": ["emergency.operations.signal", "outage.health.signal", "responder.readiness.signal"],
+    "rate_limit_plan": "pilot-civic",
+    "status": "active",
+    "created_at": "2026-07-10T00:00:00Z"
+  },
+  {
+    "provider_id": "internal-skygrid",
+    "display_name": "Internal SKYGRID Sandbox",
+    "environment": "sandbox",
+    "allowed_event_types": ["outage.health.signal", "emergency.routing.signal", "system.health.signal", "network.continuity.signal", "responder.readiness.signal"],
+    "rate_limit_plan": "internal-review",
+    "status": "active",
+    "created_at": "2026-07-10T00:00:00Z"
+  }
+]
