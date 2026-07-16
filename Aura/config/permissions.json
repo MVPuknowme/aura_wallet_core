@@ -1,0 +1,5 @@
+{
+  "AllowGitPush": false,
+  "AllowVercelDeploy": false,
+  "AllowVercelAlias": false
+}
