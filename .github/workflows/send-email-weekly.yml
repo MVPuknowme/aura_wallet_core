@@ -1,0 +1,52 @@
+name: Send Email Weekly
+
+on:
+  schedule:
+    # Run once weekly at 09:00 UTC every Monday.
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send weekly email
+        env:
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        run: |
+          missing=0
+          for key in EMAIL_TO EMAIL_FROM SMTP_HOST SMTP_PORT SMTP_USERNAME SMTP_PASSWORD; do
+            if [ -z "${!key}" ]; then
+              echo "Missing required secret: $key"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -ne 0 ]; then
+            echo "Cannot send email because one or more required secrets are missing."
+            exit 1
+          fi
+
+          subject="Weekly Workflow Report"
+          body="This is your weekly workflow email sent by GitHub Actions."
+
+          {
+            echo "Subject: ${subject}"
+            echo "From: ${EMAIL_FROM}"
+            echo "To: ${EMAIL_TO}"
+            echo "Content-Type: text/plain; charset=UTF-8"
+            echo
+            echo "${body}"
+          } > message.txt
+
+          curl --silent --show-error --ssl-reqd \
+            --url "smtp://${SMTP_HOST}:${SMTP_PORT}" \
+            --mail-from "${EMAIL_FROM}" \
+            --mail-rcpt "${EMAIL_TO}" \
+            --user "${SMTP_USERNAME}:${SMTP_PASSWORD}" \
+            --upload-file message.txt

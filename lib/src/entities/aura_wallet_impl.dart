@@ -399,33 +399,86 @@ class AuraWalletImpl extends AuraWallet {
 
     try {
       HttpClient client = HttpClient();
+      try {
+        final uri = Uri.parse('$baseUrl/api/v1/transaction')
+            .replace(queryParameters: {
+          'txHash': txHash,
+          'chainid': chainId,
+        });
+        final request = await client.getUrl(uri);
 
-      final request = await client.getUrl(Uri.parse(
-          '$baseUrl/api/v1/transaction?txHash=$txHash&chainid=$chainId'));
+        final HttpClientResponse response = await request.close();
 
-      final HttpClientResponse response = await request.close();
+        final String body = await response.transform(utf8.decoder).join();
 
-      final String data =
-          await (response.transform(utf8.decoder).join()).whenComplete(
-        () => client.close(),
-      );
+        if (response.statusCode != HttpStatus.ok) {
+          throw AuraInternalError(
+            ErrorCode.TransactionVerificationError,
+            'Unexpected status code: ${response.statusCode}. Body: $body',
+          );
+        }
 
-      List<Map<String, dynamic>> trans =
-          List.from(jsonDecode(data)['data']['transactions']);
+        final dynamic decoded = jsonDecode(body);
+        if (decoded is! Map<String, dynamic>) {
+          throw AuraInternalError(
+            ErrorCode.TransactionVerificationError,
+            'Invalid response format: expected object',
+          );
+        }
 
-      if (trans.isEmpty) {
-        // Throw an error if no transactions are found.
+        final dynamic data = decoded['data'];
+        if (data is! Map<String, dynamic>) {
+          throw AuraInternalError(
+            ErrorCode.TransactionVerificationError,
+            'Invalid response format: missing data object',
+          );
+        }
+
+        final dynamic transactions = data['transactions'];
+
+        if (transactions is! List || transactions.isEmpty) {
+          // Throw an error if no transactions are found.
+          throw AuraInternalError(
+              ErrorCode.NoTransactionsFound, 'No transactions found');
+        }
+
+        final dynamic first = transactions.first;
+        if (first is! Map<String, dynamic>) {
+          throw AuraInternalError(
+            ErrorCode.TransactionVerificationError,
+            'Invalid response format: transaction is not an object',
+          );
+        }
+
+        final dynamic txResponse = first['tx_response'];
+        if (txResponse is! Map<String, dynamic>) {
+          throw AuraInternalError(
+            ErrorCode.TransactionVerificationError,
+            'Invalid response format: missing tx_response object',
+          );
+        }
+
+        final dynamic code = txResponse['code'];
+        if (code is int) {
+          return code == 0;
+        }
+        if (code is String) {
+          return code == "0";
+        }
+
+        // Check if the transaction code is "0" (indicating success).
         throw AuraInternalError(
-            ErrorCode.NoTransactionsFound, 'No transactions found');
+          ErrorCode.TransactionVerificationError,
+          'Invalid response format: unexpected code value',
+        );
+      } finally {
+        client.close(force: true);
       }
-
-      Map<String, dynamic> tran =
-          Map<String, dynamic>.from(trans[0]['tx_response']);
-
-      // Check if the transaction code is "0" (indicating success).
-      return tran['code'] == "0";
     } catch (e) {
       // Handle any error that occurs during verification.
+      if (e is AuraInternalError) {
+        rethrow;
+      }
       String errorMessage =
           e is PlatformException ? '[${e.code}] ${e.message}' : e.toString();
       throw AuraInternalError(
