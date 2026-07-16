@@ -306,3 +306,30 @@ Available commands:
 - `where are we`
 
 The health command checks `https://aurcore.skygrid-protocol.net` first, then falls back to the latest known Vercel production URL configured in `Aura/config/aura.json` when present. Vercel deploy safety checks detect the current Vercel scope, confirm access to `skygrid-protocol.net`, and block placeholder values such as `NEW-`, `PASTE-`, `YOUR-`, and `HERE`.
+
+## SKYGRID Provider Integration Gateway v1
+
+The **SKYGRID Emergency Data On-Ramp** adds controlled-pilot provider sandbox routes for emergency, outage, responder, system-health, continuity, routing, proof-of-intake, partner review, and network operations. The interface is operator-assist, auditable, and fail-closed; it does not add autonomous control, production failover, private data movement, device activation, payment execution, custody, signing, or broadcasting.
+
+Provider routes in the Next.js sandbox app:
+
+- `GET /api/provider/health`
+- `GET /api/provider/status`
+- `POST /api/provider/events`
+- `GET /api/provider/proof/:requestId`
+- `POST /api/provider/replay/test`
+
+Provider readiness materials:
+
+- OpenAPI draft: `docs/provider/openapi-provider-gateway-v1.yaml`
+- Provider event schema: `docs/provider/provider-event.schema.json`
+- Postman collection: `postman/skygrid-provider-gateway-v1.collection.json`
+- Procurement readiness: `docs/procurement/provider-gateway-readiness.md`
+- Carrier one-pager: `docs/sales/carrier-provider-one-pager.md`
+- Pilot provider fixtures: `identity-gate-bot/fixtures/provider-registry.json`
+
+Run `npm run provider:smoke` from `identity-gate-bot/` for lightweight provider gateway validation.
+
+## SKYGRID/Aura-Core Identity Gate Bot
+
+A Next.js MVP for consent-based pre-contact verification lives in `identity-gate-bot/`. See `identity-gate-bot/README.md` for setup, privacy boundaries, Prisma schema, API routes, and admin review flow.

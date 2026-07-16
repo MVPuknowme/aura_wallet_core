@@ -23,22 +23,23 @@ class _InAppWalletPageState extends State<InAppWalletPage>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       showLoading();
       try {
-        await AuraInternalStorage().readBech32Address().then((bech32Address) {
-          print(bech32Address);
+        final bech32Address = await AuraInternalStorage().readBech32Address();
+        if (!mounted) return;
+        print(bech32Address);
 
-          if (bech32Address == null) return;
+        if (bech32Address == null) return;
 
-          InAppWalletProviderHandler.instance.setBech32Address(bech32Address);
+        InAppWalletProviderHandler.instance.setBech32Address(bech32Address);
 
-          Navigator.pushNamed(
-            context,
-            '/wallet_detail',
-          );
-        });
+        Navigator.pushNamed(
+          context,
+          '/wallet_detail',
+        );
       } catch (e) {
         // keep page
         print(e.toString());
       } finally {
+        if (!mounted) return;
         hideLoading();
       }
     });

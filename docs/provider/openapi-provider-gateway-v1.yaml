@@ -1,0 +1,87 @@
+openapi: 3.1.0
+info:
+  title: SKYGRID Provider Integration Gateway v1
+  version: 1.0.0
+  description: |
+    Controlled-pilot API for the SKYGRID Emergency Data On-Ramp. The gateway accepts emergency, outage,
+    responder, system-health, continuity, routing, proof-of-intake, partner-review, and network-operations
+    signals. Safety posture is fail-closed and operator-assist only; it does not provide autonomous carrier
+    control, production failover, private data movement, device activation, payment execution, custody, signing,
+    or broadcasting.
+servers:
+  - url: '{base_url}'
+    variables:
+      base_url:
+        default: http://localhost:3000
+paths:
+  /api/provider/health:
+    get:
+      summary: Provider health
+      responses:
+        '200': { description: Healthy controlled-pilot JSON }
+  /api/provider/status:
+    get:
+      summary: Provider registry and controlled-pilot status
+      responses:
+        '200': { description: Status JSON with sandbox providers and safety posture }
+  /api/provider/events:
+    post:
+      summary: Submit provider event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProviderEvent' }
+            examples:
+              outageHealth:
+                value:
+                  provider_id: att-sandbox
+                  event_type: outage.health.signal
+                  source_region: oregon.kfalls
+                  severity: warning
+                  timestamp: '2026-07-10T00:00:00Z'
+                  ttl_seconds: 3600
+                  signal: { service: edge-health, status: degraded, latency_ms: 212, packet_loss_pct: 2.1 }
+                  proof: { request_id: skygrid-demo-001, hash: sha256-placeholder }
+      responses:
+        '200':
+          description: Accepted proof-of-intake
+          content:
+            application/json:
+              examples:
+                accepted:
+                  value: { ok: true, mode: controlled_pilot, accepted: true, request_id: skygrid-demo-001, provider_id: att-sandbox, event_type: outage.health.signal, proof_hash: sha256:example, received_at: '2026-07-10T00:00:01Z', safety: { operator_assist: true, autonomous_control: false, production_failover: false, private_data_movement: false, device_activation: false, payment_execution: false } }
+        '400': { description: Invalid event JSON }
+  /api/provider/proof/{requestId}:
+    get:
+      summary: Lookup deterministic sandbox proof
+      parameters:
+        - in: path
+          name: requestId
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Deterministic sandbox proof response }
+  /api/provider/replay/test:
+    post:
+      summary: Dry-run replay test
+      responses:
+        '200': { description: Operator-assist dry-run replay response }
+components:
+  schemas:
+    ProviderEvent:
+      type: object
+      required: [provider_id, event_type, source_region, severity, timestamp, ttl_seconds, signal]
+      properties:
+        provider_id: { type: string, example: att-sandbox }
+        event_type: { type: string, example: outage.health.signal }
+        source_region: { type: string, example: oregon.kfalls }
+        severity: { type: string, enum: [info, warning, critical] }
+        timestamp: { type: string, format: date-time }
+        ttl_seconds: { type: integer, minimum: 60, maximum: 86400 }
+        signal: { type: object, additionalProperties: true }
+        proof:
+          type: object
+          properties:
+            request_id: { type: string }
+            hash: { type: string }

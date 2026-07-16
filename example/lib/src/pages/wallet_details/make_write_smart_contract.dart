@@ -95,15 +95,22 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                   };
 
                   print(executeMessage);
-                  final currentWallet = await handler.getWalletCore().loadCurrentWallet(handler.bech32Address);
+                  try {
+                    final currentWallet = await handler
+                        .getWalletCore()
+                        .loadCurrentWallet(handler.bech32Address);
+                    if (!mounted) return;
 
-                  await currentWallet!.makeInteractiveWriteSmartContract(
-                    contractAddress: contractAddress,
-                    executeMessage: executeMessage,
-                    funds: [
-                      200,
-                    ],
-                  ).then((value) {
+                    final value = await currentWallet!
+                        .makeInteractiveWriteSmartContract(
+                      contractAddress: contractAddress,
+                      executeMessage: executeMessage,
+                      funds: [
+                        200,
+                      ],
+                    );
+                    if (!mounted) return;
+
                     hash = value;
                     showDialog(
                       context: context,
@@ -118,7 +125,8 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                         );
                       },
                     );
-                  }).onError((error, stackTrace) {
+                  } catch (error) {
+                    if (!mounted) return;
                     showDialog(
                       context: context,
                       builder: (context) {
@@ -132,9 +140,10 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                         );
                       },
                     );
-                  }).whenComplete(
-                    () => hideLoading(),
-                  );
+                  } finally {
+                    if (!mounted) return;
+                    hideLoading();
+                  }
                 },
                 child: const Text('Trigger'),
               ),
@@ -145,43 +154,47 @@ class _MakeWriteSmartContractState extends State<MakeWriteSmartContract>
                 onPressed: () async {
                   showLoading();
                   try {
-                    final currentWallet = await handler.getWalletCore().loadCurrentWallet(handler.bech32Address);
-                    await currentWallet!
-                        .verifyTxHash(txHash: hash)
-                        .then((isSuccess) {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Dialog(
-                            child: SizedBox(
-                              height: 100,
-                              child: Center(
-                                child: isSuccess
-                                    ? const Text('Success!!!!!!')
-                                    : const Text('Error!!!!!'),
-                              ),
+                    final currentWallet = await handler
+                        .getWalletCore()
+                        .loadCurrentWallet(handler.bech32Address);
+                    if (!mounted) return;
+
+                    final isSuccess =
+                        await currentWallet!.verifyTxHash(txHash: hash);
+                    if (!mounted) return;
+
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: SizedBox(
+                            height: 100,
+                            child: Center(
+                              child: isSuccess
+                                  ? const Text('Success!!!!!!')
+                                  : const Text('Error!!!!!'),
                             ),
-                          );
-                        },
-                      );
-                    });
+                          ),
+                        );
+                      },
+                    );
                   } catch (e) {
-                    if(context.mounted){
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Dialog(
-                            child: SizedBox(
-                              height: 100,
-                              child: Center(
-                                child: Text(e.toString()),
-                              ),
+                    if (!mounted) return;
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: SizedBox(
+                            height: 100,
+                            child: Center(
+                              child: Text(e.toString()),
                             ),
-                          );
-                        },
-                      );
-                    }
+                          ),
+                        );
+                      },
+                    );
                   } finally {
+                    if (!mounted) return;
                     hideLoading();
                   }
                 },
