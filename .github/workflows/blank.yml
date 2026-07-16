@@ -1,0 +1,34 @@
+name: Send weekly email
+
+on:
+  schedule:
+    # Runs once per week at 09:00 UTC every Monday.
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      recipients:
+        description: 'Optional comma-separated recipient override'
+        required: false
+      subject:
+        description: 'Optional subject override'
+        required: false
+      body:
+        description: 'Optional body override'
+        required: false
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: ${{ github.event.inputs.subject || 'Aura Wallet Core weekly email' }}
+          to: ${{ github.event.inputs.recipients || secrets.EMAIL_RECIPIENTS }}
+          from: ${{ secrets.SMTP_FROM_ADDRESS }}
+          secure: true
+          body: ${{ github.event.inputs.body || 'This is an automated weekly email from Aura Wallet Core.' }}

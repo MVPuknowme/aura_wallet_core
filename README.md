@@ -48,6 +48,16 @@ To begin using Aura Wallet Core in your project, follow these steps:
 
 2. Run the `flutter pub get` command to install the library.
 
+### Running the Aura Dashboard example
+
+The repository includes a Flutter example you can run as a lightweight dashboard to try the library’s wallet features:
+
+1. Navigate to the `example` directory: `cd example`.
+2. Fetch dependencies: `flutter pub get`.
+3. Launch the dashboard on a connected device or emulator: `flutter run`.
+
+The example uses `AuraWalletCore` to showcase wallet creation, restoration, and basic interactions in a mobile-friendly UI.
+
 ## Basic Usage
 
 ### Creating a New Aura Wallet

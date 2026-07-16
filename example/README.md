@@ -1,16 +1,17 @@
-# example
+# Aura Dashboard example
 
-A new Flutter project.
+This Flutter app demonstrates Aura Wallet Core in a simple “dashboard” UI, letting you quickly try wallet creation, restoration, balance lookups, and transaction flows.
 
-## Getting Started
+## Prerequisites
 
-This project is a starting point for a Flutter application.
+- Flutter SDK installed and available on your PATH.
+- A connected emulator or physical device.
 
-A few resources to get you started if this is your first Flutter project:
+## Run the dashboard
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```bash
+flutter pub get
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The app will build and launch on your configured device, showcasing how to integrate `AuraWalletCore` in a mobile experience.
