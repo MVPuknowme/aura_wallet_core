@@ -62,19 +62,19 @@ class AuraWalletCoreImpl implements AuraWalletCore {
     required String passPhrase,
     String walletName = CONST_DEFAULT_WALLET_NAME,
   }) async {
+    // Validate the mnemonic before attempting restoration so validation errors
+    // aren't swallowed by the restoration error handler.
+    final bool isMnemonic =
+        AuraInAppWalletHelper.checkMnemonic(mnemonic: passPhrase);
+
+    if (!isMnemonic) {
+      throw AuraInternalError(
+        ErrorCode.InvalidPassphrase,
+        'Invalid passphrase provided.',
+      );
+    }
+
     try {
-      // Check if the provided passphrase is a valid mnemonic.
-      bool isMnemonic =
-          AuraInAppWalletHelper.checkMnemonic(mnemonic: passPhrase);
-
-      // If it's a valid mnemonic, throw an error.
-      if (isMnemonic) {
-        throw AuraInternalError(
-          ErrorCode.InvalidPassphrase,
-          'Invalid passphrase provided.',
-        );
-      }
-
       // Derive a wallet from the provided passphrase.
       final Wallet wallet =
           Wallet.derive(passPhrase.split(' '), Storehouse.networkInfo);
