@@ -1,0 +1,151 @@
+name: codex/run-workflow-to-suggest-changes
+
+on:
+  workflow_dispatch:
+    inputs:
+      suggestion_prompt:
+        description: "Describe the change set Codex should evaluate and summarize"
+        required: true
+        type: string
+      base_ref:
+        description: "Base ref to compare against"
+        required: false
+        default: "dev"
+        type: string
+      include_tests:
+        description: "Run validation checks before writing the suggestion summary"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: codex-suggest-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  suggest-changes:
+    name: Suggest changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve comparison base
+        id: base
+        shell: bash
+        env:
+          DISPATCH_BASE_REF: ${{ github.event.inputs.base_ref }}
+          PR_BASE_REF: ${{ github.base_ref }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          base_ref="${PR_BASE_REF:-${DISPATCH_BASE_REF:-${DEFAULT_BRANCH:-dev}}}"
+          git fetch --no-tags --depth=1 origin "$base_ref"
+          base_sha="$(git rev-parse "origin/$base_ref")"
+          echo "ref=$base_ref" >> "$GITHUB_OUTPUT"
+          echo "sha=$base_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Flutter
+        if: ${{ github.event.inputs.include_tests != 'false' }}
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        if: ${{ github.event.inputs.include_tests != 'false' }}
+        run: flutter pub get
+
+      - name: Analyze project source
+        if: ${{ github.event.inputs.include_tests != 'false' }}
+        run: flutter analyze
+
+      - name: Run tests
+        if: ${{ github.event.inputs.include_tests != 'false' }}
+        run: flutter test
+
+      - name: Build suggestion summary
+        id: summary
+        shell: bash
+        env:
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+          BASE_REF: ${{ steps.base.outputs.ref }}
+          SUGGESTION_PROMPT: ${{ github.event.inputs.suggestion_prompt }}
+        run: |
+          set -euo pipefail
+          mkdir -p codex
+          summary_path="codex/suggested-changes.md"
+          changed_files="$(git diff --name-only "$BASE_SHA"...HEAD | sed 's/^/- /')"
+          diff_stat="$(git diff --stat "$BASE_SHA"...HEAD)"
+
+          {
+            echo "# Codex suggested changes"
+            echo
+            echo "**Base ref:** $BASE_REF"
+            echo "**Head ref:** ${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+            echo
+            if [ -n "${SUGGESTION_PROMPT:-}" ]; then
+              echo "## Prompt"
+              echo
+              echo "$SUGGESTION_PROMPT"
+              echo
+            fi
+            echo "## Changed files"
+            echo
+            if [ -n "$changed_files" ]; then
+              echo "$changed_files"
+            else
+              echo "No file changes detected."
+            fi
+            echo
+            echo "## Diff stat"
+            echo
+            echo '```text'
+            if [ -n "$diff_stat" ]; then
+              echo "$diff_stat"
+            else
+              echo "No diff stat available."
+            fi
+            echo '```'
+            echo
+            echo "## Review guidance"
+            echo
+            echo "Review the changed files above, confirm the validation results in this workflow run, and request follow-up changes where the diff does not satisfy the prompt."
+          } > "$summary_path"
+
+          cat "$summary_path" >> "$GITHUB_STEP_SUMMARY"
+          echo "path=$summary_path" >> "$GITHUB_OUTPUT"
+
+      - name: Upload suggestion summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-suggested-changes
+          path: ${{ steps.summary.outputs.path }}
+          if-no-files-found: error
+
+      - name: Comment on pull request
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('${{ steps.summary.outputs.path }}', 'utf8');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
