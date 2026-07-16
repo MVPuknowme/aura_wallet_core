@@ -48,13 +48,14 @@ class PlaidClient {
     required this.secret,
     Map<String, String> headers = const {},
     http.Client? httpClient,
-  }) : _httpClient = httpClient ?? http.Client();
+  }) : _headers = Map<String, String>.unmodifiable(headers),
+        _httpClient = httpClient ?? http.Client();
 
   final String baseUrl;
   final String clientId;
   final String secret;
   final http.Client _httpClient;
-  final Map<String, String> _headers = Map<String, String>.unmodifiable(headers);
+  final Map<String, String> _headers;
 
   static const Map<String, String> _jsonHeaders = {
     'content-type': 'application/json',
