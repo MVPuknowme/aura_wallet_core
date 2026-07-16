@@ -3,6 +3,7 @@ import 'src/config_options/biometric_options.dart';
 import 'src/constants/aura_constants.dart';
 import 'src/entities/aura_wallet.dart';
 import 'src/env/env.dart';
+export 'src/integrations/plaid/plaid_client.dart';
 
 /// An abstract class representing the core functionality of an Aura wallet.
 abstract class AuraWalletCore {

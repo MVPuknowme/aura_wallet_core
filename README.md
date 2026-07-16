@@ -177,6 +177,40 @@ final String? mnemonicPassphrase = await auraWallet.getWalletPassPhrase();
 
 For detailed documentation and examples, please visit the [library's documentation on pub.dev](https://pub.dev/packages/aura_wallet_core).
 
+### Plaid bridge
+
+If you are using the forked Plaid stack, instantiate `PlaidClient` with the fork's base URL, client ID, and secret to create link tokens, exchange public tokens, and fetch accounts:
+
+```dart
+final plaidClient = PlaidClient(
+  baseUrl: 'https://plaid-fork.example.com',
+  clientId: 'your-client-id',
+  secret: 'your-secret',
+  headers: const {
+    'plaid-version': '2020-09-14',
+  },
+);
+
+final linkToken = await plaidClient.createLinkToken(
+  userId: 'user-123',
+  products: const ['auth'],
+);
+
+final accessToken = await plaidClient.exchangePublicToken('public-token');
+final accounts = await plaidClient.fetchAccounts(accessToken);
+```
+
+### Weekly email workflow
+
+The `send-weekly-email` GitHub Actions workflow runs every Monday at 09:00 UTC and sends a notification email. Configure the following repository secrets to enable it:
+
+- `SMTP_SERVER`
+- `SMTP_PORT` (optional; defaults to 587 in the workflow)
+- `SMTP_USERNAME`
+- `SMTP_PASSWORD`
+- `EMAIL_TO`
+- `EMAIL_FROM`
+
 ## Issues and Feedback
 
 Please report any issues or provide feedback on [GitHub](https://github.com/aura-nw/aura-wallet-core).

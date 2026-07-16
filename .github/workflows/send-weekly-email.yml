@@ -1,0 +1,23 @@
+name: Send weekly email
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'
+
+jobs:
+  send_weekly_email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send weekly email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT || '587' }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: Weekly workflow update
+          to: ${{ secrets.EMAIL_TO }}
+          from: ${{ secrets.EMAIL_FROM }}
+          body: |
+            This is the scheduled weekly email from the Aura Wallet Core workflow.
+          secure: true
