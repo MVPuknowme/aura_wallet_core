@@ -1,0 +1,9 @@
+{
+  "Name": "Aura",
+  "Product": "SKYGRID Emergency Data On-Ramp",
+  "Description": "A secure HTTPS entry point where emergency, outage, responder, system-health, and continuity data is validated, logged, routed, proved, and surfaced to dashboards/partners.",
+  "DryRun": true,
+  "PrimaryHealthUrl": "https://aurcore.skygrid-protocol.net",
+  "LatestKnownVercelProductionUrl": "",
+  "RequiredDomain": "skygrid-protocol.net"
+}

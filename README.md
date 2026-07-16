@@ -281,3 +281,28 @@ Please report any issues or provide feedback on [GitHub](https://github.com/aura
 ## License
 
 This library is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## Aura local PowerShell runtime
+
+Aura includes a small plugin-based Windows PowerShell runtime for local SKYGRID Emergency Data On-Ramp operations. The runtime keeps `DryRun` enabled by default, writes actions to `Aura/logs/aura-runtime.log`, and blocks git push plus Vercel deploy/alias operations unless they are explicitly enabled in `Aura/config/permissions.json`.
+
+Run the runtime from the repository root in Windows PowerShell 5.1:
+
+```powershell
+. .\Aura\aura.ps1
+Invoke-Aura "where are we"
+Invoke-Aura "health"
+Invoke-Aura "checkpoint"
+```
+
+Available commands:
+
+- `status`
+- `git status`
+- `checkpoint`
+- `check vercel`
+- `deploy vercel`
+- `health`
+- `where are we`
+
+The health command checks `https://aurcore.skygrid-protocol.net` first, then falls back to the latest known Vercel production URL configured in `Aura/config/aura.json` when present. Vercel deploy safety checks detect the current Vercel scope, confirm access to `skygrid-protocol.net`, and block placeholder values such as `NEW-`, `PASTE-`, `YOUR-`, and `HERE`.
