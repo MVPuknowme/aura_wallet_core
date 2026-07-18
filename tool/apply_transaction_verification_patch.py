@@ -120,3 +120,11 @@ replacement = r'''  @override
 '''
 
 path.write_text(text[:start] + replacement + text[class_close:], encoding="utf-8")
+
+test_path = Path("test/transaction_verification_test.dart")
+test_text = test_path.read_text(encoding="utf-8")
+invalid_test = "      final String body = '${'A' * 300}SENSITIVE_TAIL';"
+valid_test = "      final String body = \"${List<String>.filled(300, 'A').join()}SENSITIVE_TAIL\";"
+if invalid_test not in test_text:
+    raise RuntimeError("Could not locate transaction test body generator")
+test_path.write_text(test_text.replace(invalid_test, valid_test), encoding="utf-8")
