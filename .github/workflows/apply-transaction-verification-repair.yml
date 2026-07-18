@@ -1,5 +1,6 @@
 name: Apply transaction verification repair
 
+# This temporary workflow removes itself after the verified repair is committed.
 on:
   push:
     branches:
