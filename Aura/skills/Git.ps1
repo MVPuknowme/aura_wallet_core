@@ -4,7 +4,7 @@ function Invoke-AuraGitStatus {
 }
 
 function Invoke-AuraCheckpoint {
-    Write-AuraLog -Action 'CHECKPOINT' -Message 'local checkpoint requested; no push will be performed'
+    Write-AuraLog -Action 'CHECKPOINT' -Message 'local checkpoint requested; push/review will be performed'
     Write-Host 'Aura checkpoint (local only; no auto-push).'
     git status --short --branch
     Write-Host "Git push allowed: $($script:Aura.Git.AllowPush)"
