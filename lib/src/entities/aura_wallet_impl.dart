@@ -25,14 +25,15 @@ class AuraWalletImpl extends AuraWallet {
     required String bech32Address,
     required AuraWalletCoreEnvironment environment,
   }) : super(
-          walletName: walletName,
-          bech32Address: bech32Address,
-          environment: environment,
-        );
+         walletName: walletName,
+         bech32Address: bech32Address,
+         environment: environment,
+       );
 
   void _ensurePaymentsAllowed(String context) {
-    final String? errorMessage =
-        Storehouse.paymentRules.validationErrorMessage(context: context);
+    final String? errorMessage = Storehouse.paymentRules.validationErrorMessage(
+      context: context,
+    );
 
     if (errorMessage != null) {
       throw AuraInternalError(
@@ -75,15 +76,20 @@ class AuraWalletImpl extends AuraWallet {
   Future<String> checkWalletBalance() async {
     try {
       String denom = AuraWalletUtil.getDenom(environment);
-      String? bech32Address =
-          await Storehouse.storage.getWalletAddress(walletName: walletName);
+      String? bech32Address = await Storehouse.storage.getWalletAddress(
+        walletName: walletName,
+      );
 
-      final req =
-          bank.QueryBalanceRequest(address: bech32Address, denom: denom);
+      final req = bank.QueryBalanceRequest(
+        address: bech32Address,
+        denom: denom,
+      );
       var networkInfo = Storehouse.networkInfo;
 
-      final client =
-          bank.QueryClient(networkInfo.gRPCChannel, interceptors: [LogInter()]);
+      final client = bank.QueryClient(
+        networkInfo.gRPCChannel,
+        interceptors: [LogInter()],
+      );
 
       final response = await client.balance(req);
 
@@ -91,7 +97,9 @@ class AuraWalletImpl extends AuraWallet {
     } catch (e) {
       // Handle any exceptions that might occur while fetching the balance.
       throw AuraInternalError(
-          500, 'Error fetching wallet balance: ${e.toString()}');
+        500,
+        'Error fetching wallet balance: ${e.toString()}',
+      );
     }
   }
 
@@ -129,13 +137,18 @@ class AuraWalletImpl extends AuraWallet {
   @override
   Future<List<AuraTransaction>> checkWalletHistory() async {
     try {
-      String? bech32Address =
-          await Storehouse.storage.getWalletAddress(walletName: walletName);
+      String? bech32Address = await Storehouse.storage.getWalletAddress(
+        walletName: walletName,
+      );
 
       List<AuraTransaction>? listSender = await _getListTransactionByAddress(
-          bech32Address, AuraTransactionType.send);
+        bech32Address,
+        AuraTransactionType.send,
+      );
       List<AuraTransaction>? listRecive = await _getListTransactionByAddress(
-          bech32Address, AuraTransactionType.recive);
+        bech32Address,
+        AuraTransactionType.recive,
+      );
 
       List<AuraTransaction> listAllTransaction = [];
       listAllTransaction.addAll(listSender ?? []);
@@ -155,7 +168,9 @@ class AuraWalletImpl extends AuraWallet {
     } catch (e) {
       // Handle any exceptions that might occur while fetching the transaction history.
       throw AuraInternalError(
-          501, 'Error fetching wallet history: ${e.toString()}');
+        501,
+        'Error fetching wallet history: ${e.toString()}',
+      );
     }
   }
 
@@ -168,7 +183,9 @@ class AuraWalletImpl extends AuraWallet {
   ///
   /// Returns `null` if there's an error or no transactions are found.
   Future<List<AuraTransaction>?> _getListTransactionByAddress(
-      String? address, AuraTransactionType transactionType) async {
+    String? address,
+    AuraTransactionType transactionType,
+  ) async {
     try {
       var networkInfo = Storehouse.networkInfo;
       final request = auraTx.GetTxsEventRequest(
@@ -176,19 +193,23 @@ class AuraWalletImpl extends AuraWallet {
           if (transactionType == AuraTransactionType.send)
             "transfer.sender='$address'"
           else if (transactionType == AuraTransactionType.recive)
-            "transfer.recipient='$address'"
+            "transfer.recipient='$address'",
         ],
         pagination: PageRequest(offset: 0.toInt64(), limit: 100.toInt64()),
       );
 
-      final client = auraTx.ServiceClient(networkInfo.gRPCChannel,
-          interceptors: [LogInter()]);
+      final client = auraTx.ServiceClient(
+        networkInfo.gRPCChannel,
+        interceptors: [LogInter()],
+      );
 
       final GetTxsEventResponse response = await client.getTxsEvent(request);
 
       List<AuraTransaction> listData =
           AuraInAppWalletHelper.convertToAuraTransaction(
-              response.txResponses, transactionType);
+            response.txResponses,
+            transactionType,
+          );
 
       return listData;
     } catch (e, s) {
@@ -210,7 +231,9 @@ class AuraWalletImpl extends AuraWallet {
     // Check if the contract address is empty.
     if (contractAddress.isEmpty) {
       throw AuraInternalError(
-          ErrorCode.ContractAddressEmpty, 'Contract address is not empty');
+        ErrorCode.ContractAddressEmpty,
+        'Contract address is not empty',
+      );
     }
 
     // Check if there is exactly one query in the map.
@@ -229,12 +252,12 @@ class AuraWalletImpl extends AuraWallet {
 
       final cosMWasm.QuerySmartContractStateRequest request =
           cosMWasm.QuerySmartContractStateRequest(
-        address: contractAddress,
-        queryData: queryData,
-      );
+            address: contractAddress,
+            queryData: queryData,
+          );
 
-      final cosMWasm.QuerySmartContractStateResponse response =
-          await client.smartContractState(request);
+      final cosMWasm.QuerySmartContractStateResponse response = await client
+          .smartContractState(request);
 
       return String.fromCharCodes(response.data);
     } catch (e, s) {
@@ -260,7 +283,9 @@ class AuraWalletImpl extends AuraWallet {
     // Validate the contract address.
     if (contractAddress.isEmpty) {
       throw AuraInternalError(
-          ErrorCode.ContractAddressEmpty, 'Contract address is not empty');
+        ErrorCode.ContractAddressEmpty,
+        'Contract address is not empty',
+      );
     }
 
     // Validate the fee.
@@ -272,13 +297,16 @@ class AuraWalletImpl extends AuraWallet {
     String denom = AuraWalletUtil.getDenom(environment);
 
     // Load the wallet passphrase.
-    String? passPhrase =
-        await Storehouse.storage.readWalletPassPhrase(walletName: walletName);
+    String? passPhrase = await Storehouse.storage.readWalletPassPhrase(
+      walletName: walletName,
+    );
 
     // Check if the passphrase is null.
     if (passPhrase == null) {
       throw AuraInternalError(
-          ErrorCode.PassphraseNotFound, 'Passphrase not found');
+        ErrorCode.PassphraseNotFound,
+        'Passphrase not found',
+      );
     }
 
     // Derive the wallet from the passphrase.
@@ -291,16 +319,19 @@ class AuraWalletImpl extends AuraWallet {
 
     // Add funds to the list of coins if funds are provided.
     if (funds != null) {
-      coins.addAll(funds.map(
-        (e) => Coin.create()
-          ..amount = e.toString()
-          ..denom = denom,
-      ));
+      coins.addAll(
+        funds.map(
+          (e) => Coin.create()
+            ..amount = e.toString()
+            ..denom = denom,
+        ),
+      );
     }
 
     // Get the wallet address.
-    String? bech32Address =
-        await Storehouse.storage.getWalletAddress(walletName: walletName);
+    String? bech32Address = await Storehouse.storage.getWalletAddress(
+      walletName: walletName,
+    );
 
     // Create the execute contract message.
     final cosMWasm.MsgExecuteContract request = cosMWasm.MsgExecuteContract(
@@ -356,8 +387,9 @@ class AuraWalletImpl extends AuraWallet {
       return Storehouse.storage.readWalletPassPhrase(walletName: walletName);
     } catch (e) {
       // Handle the error and throw an AuraInternalError with the appropriate error code and message.
-      String message =
-          e is PlatformException ? '[${e.code}] ${e.message}' : e.toString();
+      String message = e is PlatformException
+          ? '[${e.code}] ${e.message}'
+          : e.toString();
       throw AuraInternalError(ErrorCode.WalletPassphraseError, message);
     }
   }
@@ -387,18 +419,23 @@ class AuraWalletImpl extends AuraWallet {
     final MsgSend message = bank.MsgSend.create()
       ..fromAddress = bech32Address
       ..toAddress = toAddress;
-    message.amount.add(Coin.create()
-      ..denom = denom
-      ..amount = amount);
+    message.amount.add(
+      Coin.create()
+        ..denom = denom
+        ..amount = amount,
+    );
 
     // Step #2: Create the transaction fee.
-    final Fee feeData =
-        AuraInAppWalletHelper.createFee(amount: fee, environment: environment);
+    final Fee feeData = AuraInAppWalletHelper.createFee(
+      amount: fee,
+      environment: environment,
+    );
 
     var networkInfo = Storehouse.networkInfo;
 
-    String? passPhrase =
-        await Storehouse.storage.readWalletPassPhrase(walletName: walletName);
+    String? passPhrase = await Storehouse.storage.readWalletPassPhrase(
+      walletName: walletName,
+    );
 
     if (passPhrase == null) {
       // Handle the case where the passphrase is null and throw an AuraInternalError.
@@ -419,8 +456,9 @@ class AuraWalletImpl extends AuraWallet {
       return signedTx;
     } catch (e, s) {
       // Handle any error that occurs during transaction signing.
-      String errorMessage =
-          e is PlatformException ? '[${e.code}] ${e.message}' : e.toString();
+      String errorMessage = e is PlatformException
+          ? '[${e.code}] ${e.message}'
+          : e.toString();
       throw AuraInternalError(ErrorCode.TransactionSigningError, errorMessage);
     }
   }
@@ -434,42 +472,108 @@ class AuraWalletImpl extends AuraWallet {
   /// Throws an [AuraInternalError] with a specific error code and message if any error occurs.
   @override
   Future<bool> verifyTxHash({required String txHash}) async {
-    String baseUrl = AuraWalletUtil.getBaseUrl(environment);
-    String chainId = AuraWalletUtil.getChainId(environment);
+    final String baseUrl = AuraWalletUtil.getBaseUrl(environment);
+    final String chainId = AuraWalletUtil.getChainId(environment);
+    final HttpClient client = HttpClient();
 
     try {
-      HttpClient client = HttpClient();
-
-      final request = await client.getUrl(Uri.parse(
-          '$baseUrl/api/v1/transaction?txHash=$txHash&chainid=$chainId'));
-
-      final HttpClientResponse response = await request.close();
-
-      final String data =
-          await (response.transform(utf8.decoder).join()).whenComplete(
-        () => client.close(),
+      final Uri uri = Uri.parse('$baseUrl/api/v1/transaction').replace(
+        queryParameters: <String, String>{'txHash': txHash, 'chainid': chainId},
       );
+      final HttpClientRequest request = await client.getUrl(uri);
+      final HttpClientResponse response = await request.close();
+      final String body = await response.transform(utf8.decoder).join();
 
-      List<Map<String, dynamic>> trans =
-          List.from(jsonDecode(data)['data']['transactions']);
-
-      if (trans.isEmpty) {
-        // Throw an error if no transactions are found.
+      if (response.statusCode != HttpStatus.ok) {
+        final String compactBody = body.replaceAll(RegExp(r'\s+'), ' ').trim();
+        final String bodySummary = compactBody.length > 256
+            ? '${compactBody.substring(0, 256)}...'
+            : compactBody;
         throw AuraInternalError(
-            ErrorCode.NoTransactionsFound, 'No transactions found');
+          ErrorCode.TransactionVerificationError,
+          'Unexpected status code: ${response.statusCode}. Body: $bodySummary',
+        );
       }
 
-      Map<String, dynamic> tran =
-          Map<String, dynamic>.from(trans[0]['tx_response']);
+      final dynamic decoded;
+      try {
+        decoded = jsonDecode(body);
+      } on FormatException catch (error) {
+        throw AuraInternalError(
+          ErrorCode.TransactionVerificationError,
+          'Invalid JSON response: ${error.message}',
+        );
+      }
 
-      // Check if the transaction code is "0" (indicating success).
-      return tran['code'] == "0";
-    } catch (e) {
-      // Handle any error that occurs during verification.
-      String errorMessage =
-          e is PlatformException ? '[${e.code}] ${e.message}' : e.toString();
+      if (decoded is! Map<String, dynamic>) {
+        throw AuraInternalError(
+          ErrorCode.TransactionVerificationError,
+          'Invalid response format: expected object',
+        );
+      }
+
+      final dynamic data = decoded['data'];
+      if (data is! Map<String, dynamic>) {
+        throw AuraInternalError(
+          ErrorCode.TransactionVerificationError,
+          'Invalid response format: missing data object',
+        );
+      }
+
+      final dynamic transactions = data['transactions'];
+      if (transactions is! List<dynamic>) {
+        throw AuraInternalError(
+          ErrorCode.TransactionVerificationError,
+          'Invalid response format: transactions must be a list',
+        );
+      }
+      if (transactions.isEmpty) {
+        throw AuraInternalError(
+          ErrorCode.NoTransactionsFound,
+          'No transactions found',
+        );
+      }
+
+      final dynamic first = transactions.first;
+      if (first is! Map<String, dynamic>) {
+        throw AuraInternalError(
+          ErrorCode.TransactionVerificationError,
+          'Invalid response format: transaction is not an object',
+        );
+      }
+
+      final dynamic txResponse = first['tx_response'];
+      if (txResponse is! Map<String, dynamic>) {
+        throw AuraInternalError(
+          ErrorCode.TransactionVerificationError,
+          'Invalid response format: missing tx_response object',
+        );
+      }
+
+      final dynamic code = txResponse['code'];
+      if (code is int) {
+        return code == 0;
+      }
+      if (code is String) {
+        return code == '0';
+      }
+
       throw AuraInternalError(
-          ErrorCode.TransactionVerificationError, errorMessage);
+        ErrorCode.TransactionVerificationError,
+        'Invalid response format: unexpected code value',
+      );
+    } on AuraInternalError {
+      rethrow;
+    } catch (error) {
+      final String errorMessage = error is PlatformException
+          ? '[${error.code}] ${error.message}'
+          : error.toString();
+      throw AuraInternalError(
+        ErrorCode.TransactionVerificationError,
+        errorMessage,
+      );
+    } finally {
+      client.close(force: true);
     }
   }
 }
