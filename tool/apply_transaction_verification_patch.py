@@ -127,4 +127,9 @@ invalid_test = "      final String body = '${'A' * 300}SENSITIVE_TAIL';"
 valid_test = "      final String body = \"${List<String>.filled(300, 'A').join()}SENSITIVE_TAIL\";"
 if invalid_test not in test_text:
     raise RuntimeError("Could not locate transaction test body generator")
-test_path.write_text(test_text.replace(invalid_test, valid_test), encoding="utf-8")
+test_text = test_text.replace(invalid_test, valid_test)
+fixture_before = "final AuraWalletImpl _wallet = AuraWalletImpl("
+fixture_after = "const AuraWalletImpl _wallet = AuraWalletImpl("
+if fixture_before not in test_text:
+    raise RuntimeError("Could not locate transaction test wallet fixture")
+test_path.write_text(test_text.replace(fixture_before, fixture_after), encoding="utf-8")
