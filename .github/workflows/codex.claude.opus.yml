@@ -15,6 +15,10 @@ on:
         description: "Repair command"
         required: false
         default: "echo 'repair placeholder'"
+      node_ledger_command:
+        description: "Optional node ledger build command for deployment evidence"
+        required: false
+        default: ""
 
 jobs:
   run:
@@ -56,6 +60,33 @@ jobs:
             echo "attempt_result=failed" >> "$GITHUB_OUTPUT"
             exit 1
           fi
+
+      - name: Build node ledger evidence (optional)
+        id: node_ledger
+        if: always()
+        env:
+          NODE_LEDGER_COMMAND: ${{ github.event.inputs.node_ledger_command }}
+          NODE_LEDGER_ARTIFACT_DIR: artifacts/node-ledger
+        run: |
+          set -euo pipefail
+          scripts/build_node_ledger_evidence.sh
+          status=$(python3 -c "import json; print(json.load(open('artifacts/node-ledger/summary.json'))['status'])")
+          echo "node_ledger_status=$status" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Node ledger evidence"
+            echo ""
+            printf 'Status: `%s`\n' "$status"
+            echo ""
+            echo 'Artifacts: `artifacts/node-ledger/node-ledger.log`, `artifacts/node-ledger/summary.json`'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload node ledger evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-ledger-evidence
+          path: artifacts/node-ledger/*
+          if-no-files-found: error
 
       - name: Reference-only fallback
         if: failure()

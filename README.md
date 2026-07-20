@@ -112,6 +112,12 @@ To publish those archives to a GitHub Release, run the workflow with `dry_run` s
 
 The repository build workflow is defined in `.github/workflows/dart.yml`. It runs on pushes and pull requests targeting `dev`, and now uses a `concurrency` group so only the latest build for the same ref stays active. Older in-progress runs for that ref are cancelled automatically to avoid duplicate GitHub Actions builds blocking each other.
 
+## Preflight node ledger evidence
+
+The manual Codex/Claude Opus preflight workflow can optionally build node ledger evidence during the same run. Provide a `node_ledger_command` workflow input with the ledger generation command to execute. The helper script writes `artifacts/node-ledger/node-ledger.log` and `artifacts/node-ledger/summary.json`, publishes the status to the workflow summary, and uploads both files in the `node-ledger-evidence` artifact.
+
+If no command is supplied, or if the optional ledger command fails because supporting tooling is unavailable, preflight continues and records the ledger status as `skipped` or `failed_optional` instead of blocking unrelated execution.
+
 ## Basic Usage
 
 ### Creating a New Aura Wallet
