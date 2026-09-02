@@ -384,7 +384,9 @@ class AuraWalletImpl extends AuraWallet {
   @override
   Future<String?> getWalletPassPhrase() async {
     try {
-      return Storehouse.storage.readWalletPassPhrase(walletName: walletName);
+      return await Storehouse.storage.readWalletPassPhrase(
+        walletName: walletName,
+      );
     } catch (e) {
       // Handle the error and throw an AuraInternalError with the appropriate error code and message.
       String message = e is PlatformException
