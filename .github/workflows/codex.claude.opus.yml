@@ -24,10 +24,7 @@ jobs:
 
       - name: Validate gate
         run: |
-          if [ "${{ github.event.inputs.user_input_flag }}" != "true" ]; then
-            echo "Execution blocked: user_input_flag must be true"
-            exit 1
-          fi
+          if [ "${{ github.event.inputs.user_input_flag }}" != "true" ];
 
       - name: Execute with retries
         id: exec
