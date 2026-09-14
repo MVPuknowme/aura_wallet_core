@@ -1,0 +1,72 @@
+name: Send weekly email
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weekly-email
+  cancel-in-progress: false
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      EMAIL_TO: ${{ secrets.EMAIL_TO }}
+      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+      EMAIL_SUBJECT: ${{ secrets.WEEKLY_EMAIL_SUBJECT }}
+      EMAIL_BODY: ${{ secrets.WEEKLY_EMAIL_BODY }}
+    steps:
+      - name: Validate email configuration
+        shell: bash
+        run: |
+          required=(SMTP_SERVER SMTP_PORT SMTP_USERNAME SMTP_PASSWORD EMAIL_TO EMAIL_FROM)
+          missing=()
+          for name in "${required[@]}"; do
+            if [ -z "${!name}" ]; then
+              missing+=("$name")
+            fi
+          done
+          if [ "${#missing[@]}" -ne 0 ]; then
+            printf 'Missing required secret: %s\n' "${missing[@]}" >&2
+            exit 1
+          fi
+
+      - name: Send weekly email
+        shell: python
+        run: |
+          import os
+          import smtplib
+          from email.message import EmailMessage
+
+          message = EmailMessage()
+          message["Subject"] = os.getenv("EMAIL_SUBJECT") or "Aura Wallet weekly status"
+          message["From"] = os.environ["EMAIL_FROM"]
+          message["To"] = os.environ["EMAIL_TO"]
+          message.set_content(
+              os.getenv("EMAIL_BODY")
+              or "This is the scheduled weekly status message from aura_wallet_core."
+          )
+
+          with smtplib.SMTP(
+              os.environ["SMTP_SERVER"],
+              int(os.environ["SMTP_PORT"]),
+              timeout=30,
+          ) as client:
+              client.ehlo()
+              client.starttls()
+              client.ehlo()
+              client.login(
+                  os.environ["SMTP_USERNAME"],
+                  os.environ["SMTP_PASSWORD"],
+              )
+              client.send_message(message)

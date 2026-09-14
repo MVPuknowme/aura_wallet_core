@@ -21,14 +21,12 @@ write_summary() {
   status="$1"
   exit_code="$2"
   detail="$3"
-  escaped_command=$(printf '%s' "$command_to_run" | json_escape)
   escaped_detail=$(printf '%s' "$detail" | json_escape)
   escaped_log=$(printf '%s' "$log_file" | json_escape)
   cat > "$summary_file" <<JSON
 {
   "status": "$status",
   "exit_code": $exit_code,
-  "command": $escaped_command,
   "detail": $escaped_detail,
   "log": $escaped_log
 }
@@ -46,7 +44,6 @@ if [ -z "$command_to_run" ]; then
 fi
 
 log "Running node ledger command."
-log "Command: $command_to_run"
 
 set +e
 bash -lc "$command_to_run" >> "$log_file" 2>&1

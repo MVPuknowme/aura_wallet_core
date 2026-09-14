@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aura-Core SkyGrid Command Center</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; background: #08111f; color: #e9f2ff; }
+    body { margin: 0; padding: 32px; }
+    .shell { max-width: 1120px; margin: 0 auto; }
+    .hero { border: 1px solid #254463; border-radius: 24px; padding: 28px; background: linear-gradient(135deg, #10213a, #0b1729); box-shadow: 0 20px 60px #0008; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 20px; }
+    .card { border: 1px solid #23405d; border-radius: 18px; padding: 18px; background: #0e1c31; }
+    .pill { display: inline-block; border-radius: 999px; padding: 6px 10px; background: #123d32; color: #9ff4ce; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    code { color: #8ad7ff; }
+    li { margin: 8px 0; }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <span class="pill">Dashboard-first control surface</span>
+      <h1>Aura-Core / SkyGrid Edge Command Center</h1>
+      <p>Draft, validate, package, and review Helm/Kubernetes and L2 artifacts before any wallet signing or Web3 execution.</p>
+      <div class="grid">
+        <article class="card"><h2>Helm status</h2><p><code>helm/aura-core-autodrill</code> is reviewed with lint, template render, and Kubernetes dry-run commands.</p></article>
+        <article class="card"><h2>L2 scripts</h2><p>JavaScript modules under <code>scripts/l2/</code> prepare, sign, submit, and verify without automatic execution.</p></article>
+        <article class="card"><h2>Operator review</h2><p>Payloads are visible and redacted before final approval, signing, or submission.</p></article>
+        <article class="card"><h2>Receipts</h2><p>Transaction hashes and receipt status can be attached after explicit Web3 submission.</p></article>
+      </div>
+    </section>
+    <section class="grid" aria-label="Operating modes">
+      <article class="card"><h3>1. Draft</h3><ul><li>Prepare Helm values.</li><li>Generate route intent.</li></ul></article>
+      <article class="card"><h3>2. Validate</h3><ul><li>Run lint and dry-run checks.</li><li>Inspect generated payloads.</li></ul></article>
+      <article class="card"><h3>3. Package</h3><ul><li>Create reviewable artifacts.</li><li>Summarize operator commands.</li></ul></article>
+      <article class="card"><h3>4. Execute</h3><ul><li>Use wallet only for explicit approval.</li><li>Store/display receipts.</li></ul></article>
+    </section>
+  </main>
+</body>
+</html>

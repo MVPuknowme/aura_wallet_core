@@ -90,7 +90,10 @@ class _MakeQuerySmartContractState extends State<MakeQuerySmartContract>
                 onPressed: () async {
                   showLoading();
 
-                  if (_queryTriggerController.text.isEmpty) return;
+                  if (_queryTriggerController.text.isEmpty) {
+                    hideLoading();
+                    return;
+                  }
 
                   Map<String, dynamic> param =
                       jsonDecode(_parameterController.text.trim());
@@ -99,59 +102,63 @@ class _MakeQuerySmartContractState extends State<MakeQuerySmartContract>
                     _queryTriggerController.text.trim(): param,
                   };
 
-                  final currentWallet = await handler
-                      .getWalletCore()
-                      .loadCurrentWallet(handler.bech32Address);
-                  await currentWallet!
-                      .makeInteractiveQuerySmartContract(
-                        contractAddress: contractAddress,
-                        query: query,
-                      )
-                      .then((res) {
-                        final Map<String, dynamic> json = jsonDecode(res);
+                  try {
+                    final currentWallet = await handler
+                        .getWalletCore()
+                        .loadCurrentWallet(handler.bech32Address);
+                    if (!mounted) return;
 
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Dialog(
-                              child: SizedBox(
-                                height: 250,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text('Balance : ${json['balance']}'),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
+                    final res = await currentWallet!
+                        .makeInteractiveQuerySmartContract(
+                      contractAddress: contractAddress,
+                      query: query,
+                    );
+                    if (!mounted) return;
+
+                    final Map<String, dynamic> json = jsonDecode(res);
+
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: SizedBox(
+                            height: 250,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Balance : ${json['balance']}'),
+                                const SizedBox(
+                                  height: 20,
                                 ),
-                              ),
-                            );
-                          },
-                        );
-                      })
-                      .whenComplete(
-                        () => hideLoading(),
-                      )
-                      .onError((error, stackTrace) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Dialog(
-                              child: SizedBox(
-                                height: 100,
-                                child: Center(
-                                  child: Text(error.toString()),
+                                ElevatedButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('OK'),
                                 ),
-                              ),
-                            );
-                          },
+                              ],
+                            ),
+                          ),
                         );
-                      });
+                      },
+                    );
+                  } catch (error) {
+                    if (!mounted) return;
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: SizedBox(
+                            height: 100,
+                            child: Center(
+                              child: Text(error.toString()),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  } finally {
+                    if (!mounted) return;
+                    hideLoading();
+                  }
                 },
                 child: const Text('Query'),
               ),

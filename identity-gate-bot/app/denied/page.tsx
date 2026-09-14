@@ -1,0 +1,1 @@
+export default function DeniedPage() { return <main className="mx-auto max-w-2xl p-8"><h1 className="text-3xl font-bold">Request not approved</h1><p className="mt-4 text-slate-300">Thank you for reaching out. MVP is not able to proceed with direct contact at this time.</p></main>; }

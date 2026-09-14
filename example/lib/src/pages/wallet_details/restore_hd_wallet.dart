@@ -57,17 +57,16 @@ class _RestoreHdWalletPageState extends State<RestoreHdWalletPage>
 
   void doRestoreWallet() async {
     try {
-      await handler
-          .getWalletCore()
-          .restoreHDWallet(
-            key: passpharseController.text,
-          )
-          .then((wallet) {
-        handler.setBech32Address(wallet.wallet.bech32Address);
-        showDialog(
-          context: context,
-          builder: (context) {
-            return Dialog(
+      final wallet = await handler.getWalletCore().restoreHDWallet(
+            passPhrase: passpharseController.text,
+          );
+      if (!mounted) return;
+
+      handler.setBech32Address(wallet.bech32Address);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
               elevation: 0,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
@@ -94,8 +93,8 @@ class _RestoreHdWalletPageState extends State<RestoreHdWalletPage>
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.black,
                       ),
-                      onPressed: () => copyAddress(wallet.wallet.bech32Address),
-                      child: Text(wallet.wallet.bech32Address),
+                      onPressed: () => copyAddress(wallet.bech32Address),
+                      child: Text(wallet.bech32Address),
                     ),
                   ),
                   const SizedBox(
@@ -112,12 +111,12 @@ class _RestoreHdWalletPageState extends State<RestoreHdWalletPage>
                   ),
                 ],
               ),
-            );
-          },
-        );
-      });
+          );
+        },
+      );
     } catch (e) {
       errorMsg = e.toString();
+      if (!mounted) return;
       setState(() {});
     }
   }

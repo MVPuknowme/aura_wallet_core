@@ -1,0 +1,14 @@
+{
+  "name": "aura-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.28.1",
+  "engines": { "node": "24.x" },
+  "scripts": {
+    "pnpk:validate": "node scripts/validate-pnpk.mjs",
+    "manifest:sync": "node scripts/verify-skygrid-manifest-sync.mjs",
+    "security:test": "node scripts/test-runtime-security.mjs",
+    "build": "pnpm run pnpk:validate && pnpm run manifest:sync && pnpm run security:test"
+  }
+}

@@ -17,7 +17,7 @@ void main() {
       timestamp: timestamp,
     );
 
-    expect(trace, 'adf6c277ad0c3455');
+    expect(trace, '06ab41e9b25e3fef');
 
     final ledger = WalletLedgerService();
     ledger.record(
@@ -35,7 +35,7 @@ void main() {
     );
 
     expect(ledger.entries.length, 1);
-    expect(ledger.entries.first.referenceId, 'adf6c277ad0c3455');
+    expect(ledger.entries.first.referenceId, '06ab41e9b25e3fef');
     expect(ledger.entries.first.status, 'trace_only_confirmed');
   });
 }

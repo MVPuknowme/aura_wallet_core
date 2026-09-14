@@ -30,6 +30,7 @@ Aura Wallet Core is a library designed to simplify the creation and management o
   - [Built-in token geo analytics](#built-in-token-geo-analytics)
   - [Deployment workflow](#deployment-workflow)
   - [Build workflow](#build-workflow)
+  - [SkyGrid Edge command center](#skygrid-edge-command-center)
 
 ## Roadmap
 
@@ -102,6 +103,19 @@ A GitHub Actions workflow sends a weekly status email every Monday at 12:00 UTC 
 You can customize the email subject, body, or schedule in `.github/workflows/weekly-email.yml`. Manual `workflow_dispatch` runs accept an optional `dry_run` input (`true`/`false`), which lets you preview the workflow logs without actually sending an email. The workflow uses a `concurrency` group to ensure only one weekly email run is active at a time.
 
 
+
+## SkyGrid preflight health standard (Gold/Silver/Bronze)
+
+Use the following approved wording in client-facing proof, invoices, and preflight summaries. The claims are intentionally tied to measurable signals already produced by the runtime checks, validator heartbeat payload, and ledger trace outputs.
+
+- **Gold health standard**: "All required preflight checks passed with no blocking findings. Validator heartbeat remained online with trust score at or above 0.90 and p95 latency at or below 200 ms during the measured window. Ledger and receipt trace evidence was generated without fallback-only status."
+- **Silver health standard**: "Required preflight checks passed with minor non-blocking findings. Validator heartbeat remained online with trust score from 0.75 to 0.89 and p95 latency from 201 ms to 350 ms during the measured window. Ledger and receipt trace evidence was generated, including documented fallbacks where applicable."
+- **Bronze health standard**: "Core preflight checks completed, but one or more quality targets remained below preferred thresholds. Validator heartbeat was intermittent or recorded trust score from 0.60 to 0.74, or p95 latency from 351 ms to 600 ms during the measured window. Ledger and receipt trace evidence exists, and open remediation items are attached to this report or invoice."
+
+### Unsupported wording to avoid
+
+Do not use absolute claims such as "guaranteed uptime", "zero risk", "fully secure", or "production perfect" in invoice-ready proof. Replace them with the measurable Gold/Silver/Bronze statements above plus the exact observation window and metric values.
+
 ## Deployment workflow
 
 Use the manual `Deploy` GitHub Actions workflow to build a release-ready Aura Wallet Core artifact. The workflow installs Flutter, resolves dependencies, verifies formatting, analyzes the package, runs tests, generates Dart API documentation, and uploads release archives plus SHA-256 checksums as workflow artifacts.
@@ -112,11 +126,22 @@ To publish those archives to a GitHub Release, run the workflow with `dry_run` s
 
 The repository build workflow is defined in `.github/workflows/dart.yml`. It runs on pushes and pull requests targeting `dev`, and now uses a `concurrency` group so only the latest build for the same ref stays active. Older in-progress runs for that ref are cancelled automatically to avoid duplicate GitHub Actions builds blocking each other.
 
-## Preflight node ledger evidence
 
-The manual Codex/Claude Opus preflight workflow can optionally build node ledger evidence during the same run. Provide a `node_ledger_command` workflow input with the ledger generation command to execute. The helper script writes `artifacts/node-ledger/node-ledger.log` and `artifacts/node-ledger/summary.json`, publishes the status to the workflow summary, and uploads both files in the `node-ledger-evidence` artifact.
+## SkyGrid Edge command center
 
-If no command is supplied, or if the optional ledger command fails because supporting tooling is unavailable, preflight continues and records the ledger status as `skipped` or `failed_optional` instead of blocking unrelated execution.
+Aura Wallet Core now includes a dashboard-first SkyGrid command center standard for preparing Aura-Core / SkyGrid build and L2 execution artifacts. The exported `SkyGridCommandCenterService` builds a review-only preview that includes Helm chart status, validation commands, L2 script artifact metadata, redacted operator payloads, and receipt records.
+
+Repository artifacts follow the issue #8 target structure:
+
+- `dashboard/command-center/` documents the Edge-style operator control surface.
+- `dashboard/validation-panel/` lists lint, render, dry-run, and L2 review checks that must pass before execution.
+- `dashboard/deployment-review/` documents manifest and intent review expectations.
+- `dashboard/receipts/` documents post-submit receipt display requirements.
+- `helm/aura-core-autodrill/` contains the review-first Helm starter chart.
+- `scripts/l2/` contains reviewable JavaScript modules for preparing, signing, submitting, and verifying L2 intents without automatic wallet execution.
+- `api/drill-onramp`, `api/drill-offramp`, and `api/status` document the dashboard API lanes.
+
+The Web3 browser or wallet lane should be used only for explicit signing, transaction submission, and receipt verification after generated payloads have been reviewed.
 
 ## Basic Usage
 
@@ -256,3 +281,61 @@ Please report any issues or provide feedback on [GitHub](https://github.com/aura
 ## License
 
 This library is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## Aura local PowerShell runtime
+
+Aura includes a small plugin-based Windows PowerShell runtime for local SKYGRID Emergency Data On-Ramp operations. The runtime keeps `DryRun` enabled by default, writes actions to `Aura/logs/aura-runtime.log`, and blocks git push plus Vercel deploy/alias operations unless they are explicitly enabled in `Aura/config/permissions.json`.
+
+Run the runtime from the repository root in Windows PowerShell 5.1:
+
+```powershell
+. .\Aura\aura.ps1
+Invoke-Aura "where are we"
+Invoke-Aura "health"
+Invoke-Aura "checkpoint"
+```
+
+Available commands:
+
+- `status`
+- `git status`
+- `checkpoint`
+- `check vercel`
+- `deploy vercel`
+- `health`
+- `where are we`
+
+The health command checks `https://aurcore.skygrid-protocol.net` first, then falls back to the latest known Vercel production URL configured in `Aura/config/aura.json` when present. Vercel deploy safety checks detect the current Vercel scope, confirm access to `skygrid-protocol.net`, and block placeholder values such as `NEW-`, `PASTE-`, `YOUR-`, and `HERE`.
+
+## SKYGRID Provider Integration Gateway v1
+
+The **SKYGRID Emergency Data On-Ramp** adds controlled-pilot provider sandbox routes for emergency, outage, responder, system-health, continuity, routing, proof-of-intake, partner review, and network operations. The interface is operator-assist, auditable, and fail-closed; it does not add autonomous control, production failover, private data movement, device activation, payment execution, custody, signing, or broadcasting.
+
+Provider routes in the Next.js sandbox app:
+
+- `GET /api/provider/health`
+- `GET /api/provider/status`
+- `POST /api/provider/events`
+- `GET /api/provider/proof/:requestId`
+- `POST /api/provider/replay/test`
+
+Provider readiness materials:
+
+- OpenAPI draft: `docs/provider/openapi-provider-gateway-v1.yaml`
+- Provider event schema: `docs/provider/provider-event.schema.json`
+- Postman collection: `postman/skygrid-provider-gateway-v1.collection.json`
+- Procurement readiness: `docs/procurement/provider-gateway-readiness.md`
+- Carrier one-pager: `docs/sales/carrier-provider-one-pager.md`
+- Pilot provider fixtures: `identity-gate-bot/fixtures/provider-registry.json`
+
+Run `npm run provider:smoke` from `identity-gate-bot/` for lightweight provider gateway validation.
+
+## SKYGRID/Aura-Core Identity Gate Bot
+
+A Next.js MVP for consent-based pre-contact verification lives in `identity-gate-bot/`. See `identity-gate-bot/README.md` for setup, privacy boundaries, Prisma schema, API routes, and admin review flow.
+
+## Preflight node ledger evidence
+
+The manual Codex/Claude Opus workflow accepts an optional `node_ledger_command`. It runs only after `user_input_flag` is explicitly `true`, including when the primary command fails. A denied gate runs neither target, repair, nor ledger commands. Ledger results are `skipped`, `failed_optional`, or `success`, written to `artifacts/node-ledger/summary.json` with a log and uploaded as `node-ledger-evidence`. Optional evidence or upload failures do not override the primary result. Commands are operator-supplied shell code; use reviewed commands and do not print credentials into artifact logs. Raw command text is omitted from the summary.
+
+Focused validation: `python3 -m unittest discover -s test -p test_preflight_evidence.py -v`. The PR-only Preflight evidence tests workflow runs these tests without deployment, wallet operations, or external credentials.

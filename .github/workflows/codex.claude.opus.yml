@@ -20,73 +20,45 @@ on:
         required: false
         default: ""
 
+permissions:
+  contents: read
+
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Validate gate
-        run: |
-          if [ "${{ github.event.inputs.user_input_flag }}" != "true" ]; then
-            echo "Execution blocked: user_input_flag must be true"
-            exit 1
-          fi
-
-      - name: Execute with retries
+      - name: Validate gate and execute with retries
         id: exec
-        run: |
-          set +e
-          result="failed"
-          for attempt in 1 2 3; do
-            echo "Attempt $attempt"
-            bash -lc "${{ github.event.inputs.target_command }}"
-            code=$?
-            if [ $code -eq 0 ]; then
-              result="success"
-              break
-            fi
-            if [ "$attempt" -lt 3 ]; then
-              bash -lc "${{ github.event.inputs.repair_command }}"
-            fi
-          done
-
-          if [ "$result" = "success" ]; then
-            echo "mode=execute" >> "$GITHUB_OUTPUT"
-            echo "attempt_result=success" >> "$GITHUB_OUTPUT"
-            exit 0
-          else
-            echo "mode=reference-only" >> "$GITHUB_OUTPUT"
-            echo "attempt_result=failed" >> "$GITHUB_OUTPUT"
-            exit 1
-          fi
+        env:
+          USER_INPUT_FLAG: ${{ inputs.user_input_flag }}
+          TARGET_COMMAND: ${{ inputs.target_command }}
+          REPAIR_COMMAND: ${{ inputs.repair_command }}
+        run: bash scripts/run_codex_preflight.sh
 
       - name: Build node ledger evidence (optional)
         id: node_ledger
-        if: always()
+        if: ${{ !cancelled() && inputs.user_input_flag == 'true' }}
+        continue-on-error: true
         env:
-          NODE_LEDGER_COMMAND: ${{ github.event.inputs.node_ledger_command }}
+          NODE_LEDGER_COMMAND: ${{ inputs.node_ledger_command }}
           NODE_LEDGER_ARTIFACT_DIR: artifacts/node-ledger
         run: |
-          set -euo pipefail
-          scripts/build_node_ledger_evidence.sh
+          bash scripts/build_node_ledger_evidence.sh
           status=$(python3 -c "import json; print(json.load(open('artifacts/node-ledger/summary.json'))['status'])")
           echo "node_ledger_status=$status" >> "$GITHUB_OUTPUT"
-          {
-            echo "### Node ledger evidence"
-            echo ""
-            printf 'Status: `%s`\n' "$status"
-            echo ""
-            echo 'Artifacts: `artifacts/node-ledger/node-ledger.log`, `artifacts/node-ledger/summary.json`'
-          } >> "$GITHUB_STEP_SUMMARY"
+          printf '### Node ledger evidence\n\nStatus: %s\n' "$status" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload node ledger evidence
-        if: always()
-        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && steps.node_ledger.outcome != 'skipped' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v5
         with:
           name: node-ledger-evidence
           path: artifacts/node-ledger/*
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Reference-only fallback
         if: failure()

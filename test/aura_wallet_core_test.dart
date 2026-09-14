@@ -1,11 +1,12 @@
 import 'package:aura_wallet_core/aura_wallet_core.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:aura_wallet_core/src/core/exceptions/aura_internal_exception.dart';
 
 void main() {
   group('Token analytics', () {
     test('builds a geo distribution summary for token holdings', () {
       final AuraWalletCore core = AuraWalletCore.create(
-        environment: AuraWalletCoreEnvironment.testnet,
+        environment: AuraWalletCoreEnvironment.testNet,
         tokenAnalyticsConfig: const TokenAnalyticsConfig(topRegionsLimit: 2),
       );
 
@@ -41,7 +42,7 @@ void main() {
 
     test('throws when analytics are disabled', () {
       final AuraWalletCore core = AuraWalletCore.create(
-        environment: AuraWalletCoreEnvironment.testnet,
+        environment: AuraWalletCoreEnvironment.testNet,
         tokenAnalyticsConfig: const TokenAnalyticsConfig(enabled: false),
       );
 
@@ -56,7 +57,7 @@ void main() {
             ),
           ],
         ),
-        throwsA(isA<Exception>()),
+        throwsA(isA<AuraInternalError>()),
       );
     });
   });

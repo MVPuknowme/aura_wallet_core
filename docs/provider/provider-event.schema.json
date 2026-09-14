@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aura-core.local/schemas/skygrid-provider-event-v1.json",
+  "title": "SKYGRID Emergency Data On-Ramp Provider Event v1",
+  "type": "object",
+  "required": ["provider_id", "event_type", "source_region", "severity", "timestamp", "ttl_seconds", "signal"],
+  "properties": {
+    "provider_id": { "type": "string", "examples": ["att-sandbox"] },
+    "event_type": { "type": "string", "examples": ["outage.health.signal"] },
+    "source_region": { "type": "string", "examples": ["oregon.kfalls"] },
+    "severity": { "type": "string", "enum": ["info", "warning", "critical"] },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "ttl_seconds": { "type": "integer", "minimum": 60, "maximum": 86400 },
+    "signal": { "type": "object", "additionalProperties": true },
+    "proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "request_id": { "type": "string" },
+        "hash": { "type": "string" }
+      }
+    }
+  },
+  "additionalProperties": false
+}
