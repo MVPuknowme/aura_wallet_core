@@ -333,3 +333,9 @@ Run `npm run provider:smoke` from `identity-gate-bot/` for lightweight provider 
 ## SKYGRID/Aura-Core Identity Gate Bot
 
 A Next.js MVP for consent-based pre-contact verification lives in `identity-gate-bot/`. See `identity-gate-bot/README.md` for setup, privacy boundaries, Prisma schema, API routes, and admin review flow.
+
+## Preflight node ledger evidence
+
+The manual Codex/Claude Opus workflow accepts an optional `node_ledger_command`. It runs only after `user_input_flag` is explicitly `true`, including when the primary command fails. A denied gate runs neither target, repair, nor ledger commands. Ledger results are `skipped`, `failed_optional`, or `success`, written to `artifacts/node-ledger/summary.json` with a log and uploaded as `node-ledger-evidence`. Optional evidence or upload failures do not override the primary result. Commands are operator-supplied shell code; use reviewed commands and do not print credentials into artifact logs. Raw command text is omitted from the summary.
+
+Focused validation: `python3 -m unittest discover -s test -p test_preflight_evidence.py -v`. The PR-only Preflight evidence tests workflow runs these tests without deployment, wallet operations, or external credentials.

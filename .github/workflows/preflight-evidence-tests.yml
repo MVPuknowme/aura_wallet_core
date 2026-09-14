@@ -1,0 +1,22 @@
+name: Preflight evidence tests
+on:
+  pull_request:
+    branches: [dev]
+    paths:
+      - "scripts/build_node_ledger_evidence.sh"
+      - "scripts/run_codex_preflight.sh"
+      - "test/test_preflight_evidence.py"
+      - ".github/workflows/codex.claude.opus.yml"
+      - ".github/workflows/preflight-evidence-tests.yml"
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check shell syntax
+        run: bash -n scripts/build_node_ledger_evidence.sh scripts/run_codex_preflight.sh
+      - name: Test gates, retries, and optional evidence
+        run: python3 -m unittest discover -s test -p test_preflight_evidence.py -v
